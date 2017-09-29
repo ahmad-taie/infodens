@@ -1,0 +1,7 @@
+
+===============
+ Run program
+===============
+
+- From your terminal Goto the B6-SFB1102 directory
+  python main.py

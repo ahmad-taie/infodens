@@ -1,0 +1,422 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to infodens’s documentation! &#8212; infodens 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/cloud.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noticia+Text|Open+Sans|Droid+Sans+Mono" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/cloud.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="infodens 1.1 documentation" href="#" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body role="document">
+    <div class="relbar-top">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+    <li><a href="#">infodens 1.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-infodens-s-documentation">
+<h1>Welcome to infodens&#8217;s documentation!<a class="headerlink" href="#welcome-to-infodens-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="user-documentation">
+<h1>User Documentation<a class="headerlink" href="#user-documentation" title="Permalink to this headline">¶</a></h1>
+<p>In this software, we implement various features and machine learning algorithms to experiment on text documents (Original and Translated).
+Machine learning algorithms implemented include:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Support Vector Machines (SVM)</li>
+<li>Neural Networks</li>
+<li>Decision Trees</li>
+<li>Random Forests</li>
+</ul>
+</div></blockquote>
+<p>Features implemented include:</p>
+<blockquote>
+<div><ul class="simple">
+<li>surface features:</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>average word length</li>
+<li>sentence length</li>
+<li>syllable ratio</li>
+</ul>
+</div></blockquote>
+<ul>
+<li><dl class="first docutils">
+<dt>lexical features:</dt>
+<dd><ul class="first last simple">
+<li>lexical density</li>
+<li>lexical richness</li>
+<li>parse tree depth</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">ngram features</p>
+</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>Bag-of-word ngrams</li>
+<li>Bag-of-POS ngrams</li>
+<li>Bag-of-lemma ngrams</li>
+<li>Bag-of-MixedWords ngrams</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<div class="section" id="downloading-the-software">
+<h2>Downloading the software<a class="headerlink" href="#downloading-the-software" title="Permalink to this headline">¶</a></h2>
+<p>Goto any <em>directory</em> of your choice:</p>
+<blockquote>
+<div><ul class="simple">
+<li>cd path/to/directory</li>
+</ul>
+</div></blockquote>
+<p>Clone the software:</p>
+<blockquote>
+<div><ul class="simple">
+<li>git clone <a class="reference external" href="https://github.com/rrubino/B6-SFB1102.git">https://github.com/rrubino/B6-SFB1102.git</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="running-the-software">
+<h2>Running the software<a class="headerlink" href="#running-the-software" title="Permalink to this headline">¶</a></h2>
+<p>Goto your chosen <em>directory</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>cd path/to/directory</li>
+</ul>
+</div></blockquote>
+<p>Run the software:</p>
+<blockquote>
+<div><ul class="simple">
+<li>python main.py</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="pre-requisites">
+<h2>Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Python programming language</li>
+<li>Natural Language ToolKit</li>
+<li>Scikit</li>
+<li>Pattern Library</li>
+<li>joblib</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>This is where you set the parameters (features, classifiers etc.) for running the program
+Open the tesconfig.txt using a text editor (e.g. gedit textconfig.txt)</p>
+<div class="line-block">
+<div class="line">Find the line that starts with “<strong>input files</strong> :”. On this line you are to input two file paths. The first path is the path to the file containing the sentences (original and translated) for training and testing and the second path is the path containing the labels or classes of the sentences.</div>
+</div>
+<p>input files : path/to/sentences.txt path/to/classes.txt</p>
+<div class="line-block">
+<div class="line">Find the line that starts with “<strong>output classifier</strong> :”. On this line you are to input a path which would be a path to a file that would contain results of the classification (Accuracy, precision, recall and fscore).</div>
+</div>
+<p>output classifier: path/to/classificationResults.txt</p>
+<div class="line-block">
+<div class="line">Find the line that starts with “<strong>classifiers</strong> :”. On this line you will input the names of the classifiers you intend to experiment with separated by spaces.</div>
+<div class="line">classifiers : DecisionTree RandomForest SVM</div>
+</div>
+<p>You must input at least one of these. But which one of them and how many you choose is up to you</p>
+<div class="line-block">
+<div class="line">On the line that starts with “<strong>language model</strong>:” you are to input a path to a file that contains sentences from which you intend to create a language model which you might need for some feature extraction modules.</div>
+</div>
+<p>language model: path/to/file.txt</p>
+<div class="section" id="features-configuration">
+<h3>Features Configuration<a class="headerlink" href="#features-configuration" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">1. <strong>averageWordLength</strong>:</div>
+<div class="line"><strong>Description</strong>: Mean length of words (in characters) based on the assumption that translated texts used simpler words, particularly shorter ones.</div>
+<div class="line"><strong>Parameters</strong>: None. This feature takes no parameter. To configure, just type the feature id 1</div>
+</div>
+<div class="line-block">
+<div class="line">2. <strong>syllableRatio</strong>:</div>
+<div class="line"><strong>Description</strong>: We approximate this feature by counting the number of vowel-sequences that are delimited by consonants or space in a word, normalized by the number of tokens in the chunk.</div>
+<div class="line"><strong>Parameters</strong>: None. This feature also takes no parameter. To configure, just type the feature id 2</div>
+</div>
+<div class="line-block">
+<div class="line">3. <strong>lexicalDensity</strong>:</div>
+<div class="line"><strong>Description</strong>: The frequency of tokens that are not nouns, adjectives, adverbs or verbs. This is computed by dividing the number of tokens tagged with POS tags that do not start with J, N, R or V by the number of tokens in the chunk</div>
+<div class="line"><strong>Parameters</strong>: JJ,NN,VP. POS tags that start with J, N, R, or V</div>
+<div class="line"><strong>Configure</strong>: 3 JJ,NN,VP,VB</div>
+</div>
+<div class="line-block">
+<div class="line">4. <strong>ngramBagOfWords</strong>:</div>
+<div class="line"><strong>Description</strong>: Extracts n-gram bag of words features.</div>
+<div class="line"><strong>Parameters</strong>: n,minimumFrequency. The first parameter is the size of the ngrams n, the second is the minmum frequency required to include a token in the ngram construction</div>
+<div class="line"><strong>Configure</strong>: 4 2,10</div>
+</div>
+<div class="line-block">
+<div class="line">5. <strong>ngramPOSBagOfWords</strong>:</div>
+<div class="line"><strong>Description</strong>: Extracts n-gram bag of words features for POS tags.</div>
+<div class="line"><strong>Parameters</strong>: n,minimumFrequency. The first parameter is the size of the ngrams n, the second is the minmum frequency required to include a token in the ngram construction</div>
+<div class="line"><strong>Configure</strong>: 5 2,10</div>
+</div>
+<div class="line-block">
+<div class="line">6. <strong>ngramMixedBagOfWords</strong>:</div>
+<div class="line"><strong>Description</strong>: Extracts n-gram bag of words features for Mixed Words (Function words replaced by POS).</div>
+<div class="line"><strong>Parameters</strong>: n,minimumFrequency. The first parameter is the size of the ngrams n, the second is the minmum frequency required to include a token in the ngram construction</div>
+<div class="line"><strong>Configure</strong>: 6 2,10</div>
+</div>
+<div class="line-block">
+<div class="line">7. <strong>ngramLemmaBagOfWords</strong>:</div>
+<div class="line"><strong>Description</strong>: Extracts n-gram bag of words features for word lemmas.</div>
+<div class="line"><strong>Parameters</strong>: n,minimumFrequency. The first parameter is the size of the ngrams n, the second is the minmum frequency required to include a token in the ngram construction</div>
+<div class="line"><strong>Configure</strong>: 7 2,10</div>
+</div>
+<div class="line-block">
+<div class="line">8. <strong>parseTreeDepth</strong>:</div>
+<div class="line"><strong>Description</strong>: Find depth of a sentence&#8217;s parse tree</div>
+<div class="line"><strong>Parameters</strong>: None. This feature also takes no parameter. To configure, just type the feature id 8</div>
+</div>
+<div class="line-block">
+<div class="line">9. N/A</div>
+<div class="line">10. <strong>sentenceLength</strong>:</div>
+<div class="line"><strong>Description</strong>: Computes sentences’ length as a feature</div>
+<div class="line"><strong>Parameters</strong>: None. This feature also takes no parameter. To configure, just type the feature id 10</div>
+</div>
+<div class="line-block">
+<div class="line">11. <strong>lexicalRichness</strong>:</div>
+<div class="line"><strong>Description</strong>: The ratio of unique tokens in the sentence over the sentence length.</div>
+<div class="line"><strong>Parameters</strong>: None. This feature also takes no parameter. To configure, just type the feature id 11</div>
+</div>
+<div class="line-block">
+<div class="line">12. <strong>lexicalToTokens</strong>: Description: The ratio of lexical words to tokens in the sentence.</div>
+<div class="line"><strong>Parameters</strong>: CC,DT,WDT,IN,PDT</div>
+<div class="line"><strong>Configure</strong>: 12 CC,DT,WDT,IN,PDT</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="developer-documentation">
+<h1>Developer Documentation<a class="headerlink" href="#developer-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="code-or-directory-organisation">
+<h2>Code (or directory) organisation<a class="headerlink" href="#code-or-directory-organisation" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">B6-SFB1102</div>
+</div>
+<ul class="simple">
+<li>infodens</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>classifier</li>
+<li>controller</li>
+<li>featurextractor</li>
+<li>formater</li>
+<li>preprocessor</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>testCases</li>
+<li>userdoc:</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>build</li>
+<li>source</li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line">The <strong>classifier</strong> package contains the base class <strong>Classifier</strong> in <em>classifier.py</em> and the sub-classes <strong>Adaboost</strong>, <strong>SVM</strong>, <strong>DecisioTree</strong>, <strong>RandomForest</strong>.</div>
+<div class="line">The base class implements methods common to all classifiers: splitTrainTest(), predict(), evaluate(), shuffle().</div>
+<div class="line">The sub classes inherits from the super class and implements the train method.</div>
+<div class="line">The classifier package also contains the classifierManager class which automatically runs the classifiers information from the config file.</div>
+</div>
+<div class="line-block">
+<div class="line">The <strong>controller</strong> package contains the <strong>Controller</strong> class. The Controller class implements methods for parsing the config file to realise the classifiers, features, input and output files, resources needed to run the program successfully. It also implements methods for managing the features and classifiers (running the featureManager() and classifierManager()).</div>
+</div>
+<div class="line-block">
+<div class="line">The <strong>featurextractor</strong> package contains classes for the different feature groups - bagOfNgrams features, surfaceFeatures, lexicalFeatures. The package also has the FeatureManager class that implements certain utility methods for managing features. checkValidity() checks if features selected by the user is a valid feature. methodsWithDecorator() finds methods that are decorated with a certain name in a class because all feature methods are decorated. idClassDictionary() returns a dictionary with feature id as keys and the classes with corresponding methods as values. The callExtractors automatically runs the feature methods.</div>
+</div>
+<div class="line-block">
+<div class="line">The <strong>preprocessor</strong>  package contains the Preprocess class which implements methods that extracts information from the text data and sometimes in certain formats</div>
+</div>
+<p>The Preprocess class implements getPlainSentences() which returns the sentences in input files as strings and gettokenizeSents() which returns same sentences as a list. getParseTrees() returs a list of parsetrees for every sentence in the corpus,while nltkPOStag() returns the POS tags for every sentence. getLemmatizedSents() returns the sentences in lemmatised format and getMixedSents() computes Mixed sentences which replaces function words with POS tags. buildNgramsType() builds ngrams with a specified n for either sentences, POS, mixed sentences or lemmas.</p>
+<div class="line-block">
+<div class="line">The <strong>formatter</strong> package implements the Format class which formats the dataset in libsvm, arrf and scikit formats. The FormatWriter class implements methods that writed the libsvm and arrf formats to file</div>
+</div>
+</div>
+<div class="section" id="how-to-add-features">
+<h2>How to add features<a class="headerlink" href="#how-to-add-features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="add-features-to-an-existing-class">
+<h3>Add features to an existing class<a class="headerlink" href="#add-features-to-an-existing-class" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre>            <span class="nd">@featid</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">newFunctionName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argString</span><span class="p">):</span>
+                    <span class="n">features</span> <span class="o">=</span> <span class="n">functionBody</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">features</span>
+</pre></div>
+</td></tr></table></div>
+<div class="line-block">
+<div class="line">id is a number that is not already used in the feature configuration section.</div>
+<div class="line">argString is the argument given in the config file needed to compute the feature. if for example the function needs, say 3 parameters, p1, p2, p3, argString is a string &#8216;p1,p2,p3&#8217; which in the body of the function is then seperated and put in the correct variable names.</div>
+</div>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre>    <span class="n">variables</span> <span class="o">=</span> <span class="n">argString</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="add-a-new-features-class">
+<h3>Add a new features class<a class="headerlink" href="#add-a-new-features-class" title="Permalink to this headline">¶</a></h3>
+<p>Each feature class implements related features like surface features or lexical features. To implement a new feature class, you have to create a new class. All feature classes extend the FeatureExtractor class which initialises an object of the class with a preprocessor object. To add feature to the new class takes the same format as already described.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre>            <span class="k">class</span> <span class="nc">classname</span><span class="p">(</span><span class="n">FeatureExtractor</span><span class="p">):</span>
+                    <span class="nd">@featid</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                    <span class="k">def</span> <span class="nf">newFunctionName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argString</span><span class="p">):</span>
+                            <span class="n">features</span> <span class="o">=</span> <span class="n">functionBody</span><span class="p">()</span>
+                            <span class="k">return</span> <span class="n">features</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinx-toc sphinxlocaltoc">
+    <h3><a href="#">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Welcome to infodens&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#user-documentation">User Documentation</a><ul>
+<li><a class="reference internal" href="#downloading-the-software">Downloading the software</a></li>
+<li><a class="reference internal" href="#running-the-software">Running the software</a></li>
+<li><a class="reference internal" href="#pre-requisites">Pre-requisites</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#features-configuration">Features Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#developer-documentation">Developer Documentation</a><ul>
+<li><a class="reference internal" href="#code-or-directory-organisation">Code (or directory) organisation</a></li>
+<li><a class="reference internal" href="#how-to-add-features">How to add features</a><ul>
+<li><a class="reference internal" href="#add-features-to-an-existing-class">Add features to an existing class</a></li>
+<li><a class="reference internal" href="#add-a-new-features-class">Add a new features class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+    
+    
+        <div class="sidebar-toggle-group no-js">
+            
+            <button class="sidebar-toggle" id="sidebar-hide" title="Hide the sidebar menu">
+                 «
+                <span class="show-for-small">hide menu</span>
+                
+            </button>
+            <button class="sidebar-toggle" id="sidebar-show" title="Show the sidebar menu">
+                
+                <span class="show-for-small">menu</span>
+                <span class="hide-for-small">sidebar</span>
+                 »
+            </button>
+        </div>
+    
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+    <li><a href="#">infodens 1.1 documentation</a> &#187;</li>
+ 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Raphael Rubino.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>

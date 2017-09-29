@@ -1,0 +1,24 @@
+1
+# This is a comment
+2
+#classifiers : RandomForest
+#language model: testSent.txt
+#language : FR
+threads : 9
+classifiers : DecisionTree RandomForest SVM
+#classifiers : DecisionTree RandomForest
+#3 J,N,V,R
+#4 1,10
+#4 2,5
+#5 1,10
+#6 1,10
+#7 1,10
+#10
+#11
+#12 CC,DT,WDT,IN,PDT
+
+output classifier: report1.txt
+output features: feats.txt format
+
+input files : testFile.txt labelFile.txt
+# input and classifiers are parsed after ':'

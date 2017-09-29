@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User documentation</title>
+</head>
+<body>
+
+<ul>
+<li> <a href = "#download">Downloading (or Cloning) the system</a>  </li>
+<li> <a href = "#req">Pre-requirements </a> </li>
+<li> <a href = "#config">Configuration </a> </li>
+<li> <a href = "#fconfig">Feature Configuration </a> </li>
+<li> <a href = "#run">Running the program  </a></li>
+
+</ul>
+
+
+
+<h1 id = "download">Downloading (or Cloning) the system</h1>
+Open your Terminal <br>
+Change directory into any directory of your choice<br>
+&nbsp;&nbsp;&nbsp; cd directory <br>
+Clone the software <br>
+&nbsp;&nbsp;&nbsp; git clone https://github.com/rrubino/B6-SFB1102.git
+
+<h1 id = "req">Pre-requirements</h1>
+
+<ul>
+
+<li> Python Programming Language</li>
+<li> Natural Laguage Toolkit (NLTK)</li>
+<li> Scikit Library</li>
+<li> Pattern Library</li>
+
+</ul>
+
+
+<h1 id = "config">Configuration</h1>
+
+
+This is where you set the parameters (features, classifiers etc.) for running the program <br>
+Open the tesconfig.txt using a text editor (e.g. gedit textconfig.txt) <br><br>
+
+Find the line that starts with “<b>input files </b>:”. <br> On this line you are to input two file paths. <br> The first path is the path to the file containing the sentences (original and translated)
+ for training and testing and the second path is the path containing the labels or classes of the sentences. <br>
+input files : path/to/sentences.txt &nbsp; path/to/classes.txt <br> 
+The sentences.txt file (from the line above) must contain a sentence (or block) per line while the classes.txt file must contain a label per line. Both files must have the same number of lines <br><br>
+
+
+Find the line that starts with “<b>output classifier</b> :”. <br> On this line you are to input a path which would be a path to a file that would contain results of the classification (Accuracy, precision, recall and fscore).
+output classifier: path/to/classificationResults.txt <br> <br>
+
+Find the line that starts with “<b>classifiers </b>:”. <br> On this line you will input the names of the classifiers you intend to experiment with separated by spaces.
+classifiers : DecisionTree &nbsp; RandomForest &nbsp; SVM <br>
+You must input at least one of these. But which one of them and how many you choose is up to you <br> <br>
+
+On the line that starts with “ <b> language model </b> :”  <br> you are to input a path to a file that contains sentences from which you intend to create a language model which you might need for some feature extraction modules. <br>
+language model: &nbsp; path/to/file.txt <br> <br>
+
+<h2 id = "fconfig">Feature Configuration</h2>
+Features are specified using feature ids followed by their parameters. Feature ids are number and parameters are separated by commas while the parameters are separated from the feature id by space.
+In general, to specify a feature with feature id ID and parameters A,B,C, you simply type
+ID A,B,C
+
+<ol>
+
+<li>
+<b>averageWordLength</b>: <br>
+<b>Description</b>: Mean length of words (in characters) based on the assumption that translated texts used simpler words, particularly shorter ones. <br>
+<b>Parameters</b>: None. This feature takes no parameter. To configure, just type the feature id 1 <br>
+
+</li>
+
+
+<li>
+<b>syllableRatio </b>: <br>
+<b>Description</b>: We approximate this feature by counting the number of vowel-sequences that are delimited by consonants or space in a word, normalized by the number of tokens in the chunk. <br>
+<b>Parameters</b>: None. This feature also takes no parameter. To configure, just type the feature id 2
+
+</li>
+
+<li>
+<b>lexicalDensity</b>:
+<b>Description</b>: The frequency of tokens that are not nouns, adjectives, adverbs or verbs. <br>
+This is computed by dividing the number of tokens tagged with POS tags 
+that do not start with J, N, R or V by the number of tokens in the chunk <br>
+<b>Parameters</b>: JJ,NN,VP. POS tags that start with J, N, R, or V <br>
+<b>Configure</b>: 3 &nbsp; JJ,NN,VP,VB
+
+</li>
+
+<li>
+<b>ngramBagOfWords</b>: <br>
+<b>Description</b>: Extracts n-gram bag of words features. <br>
+<b>Parameters</b>: n,minimumFrequency. The first parameter is the size of the ngrams n, the second is the minimum frequency required to include a token in the ngram construction<br>
+<b>Configure</b>: 4 &nbsp; 2,10
+
+</li>
+
+<li>
+<b>ngramPOSBagOfWords</b>: <br>
+<b>Description</b>: Extracts n-gram bag of words features for POS tags. <br>
+<b>Parameters</b>: n,minimumFrequency. The first parameter is the size of the ngrams n, the second is the minimum frequency required to include a token in the ngram construction<br>
+<b>Configure</b>: 5 &nbsp; 2,10
+</li>
+
+<li>
+<b>ngramMixedBagOfWords</b>: <br>
+<b>Description</b>: Extracts n-gram bag of words features for Mixed Words (Function words replaced by POS). <br>
+<b>Parameters</b>: n,minimumFrequency. The first parameter is the size of the ngrams n, the second is the minimum frequency required to include a token in the ngram construction<br>
+<b>Configure</b>: 6 &nbsp; 2,10
+
+</li>
+
+</ol>
+
+<h1 id = "run">Running the program</h1>
+Goto the B6-SFB1102 directory<br>
+&nbsp;&nbsp;&nbsp;	cd B6-SFB1102<br>
+Run the main file<br>
+&nbsp;&nbsp;&nbsp;	python main.py
+
+</body>
+</html>
