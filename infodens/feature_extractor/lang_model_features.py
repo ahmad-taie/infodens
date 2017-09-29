@@ -269,7 +269,8 @@ class Lang_model_features(Feature_extractor):
             finNgram[ngramsKeys[i]] = quantile
 
         listOfSentences = self.preprocessor.gettokenizeSents()
-        ngramFeatures = sparse.lil_matrix((len(listOfSentences), quantile))
+        # +1 for OOV
+        ngramFeatures = sparse.lil_matrix((len(listOfSentences), quantile + 1))
 
         print("Extracting ngram feats.")
 
@@ -284,9 +285,14 @@ class Lang_model_features(Feature_extractor):
                     toAdd = ngramsVocab[ngramEntry]
                     ngramFeatures[i, ngramIndex] += toAdd
                     lenSent += toAdd
+                else:
+                    # OOV word (cut-off
+                    toAdd = ngramsVocab[ngramEntry]
+                    ngramFeatures[i, -1] += toAdd
+                    lenSent += toAdd
 
             if lenSent:
-                for j in range(0, quantile):
+                for j in range(0, quantile+1):
                     ngramFeatures[i, j] /= lenSent
 
         print("Finished ngram features.")
