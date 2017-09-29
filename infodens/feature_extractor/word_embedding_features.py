@@ -44,14 +44,17 @@ class Word_embedding_features(Feature_extractor):
             else:
                 sentVec = []
                 for word in sentence:
-                    try:
+                    if word in model.wv.vocab:
                         wordVector = model[word]
                         sentVec.append(wordVector)
-                    except KeyError:
+                    else:
                         #wordVector = [0]*vecSize
                         # Skip OOV
                         continue
-                vecAverages.append(np.mean(sentVec, axis=0))
+                if len(sentVec) > 0:
+                    vecAverages.append(np.mean(sentVec, axis=0))
+                else:
+                    vecAverages.append([0] * vecSize)
 
         return sparse.lil_matrix(vecAverages)
 

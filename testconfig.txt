@@ -2,7 +2,7 @@
 # This is a comment
 #2
 #classifiers : RandomForest
-training corpus: data/testSent2.txt
+training corpus: data/30k.literature.orig_tran.low.en
 #srilm path : /home/gilani/Documents/Github/srilm-1.7.2/bin/i686-m64
 kenlm : /home/gilani/Documents/Github/kenlm/build/bin
 operating language : eng
