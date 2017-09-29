@@ -25,21 +25,21 @@ classifiers : SVC_linear
 #11
 #12 0,CC,DT,WDT,IN,PDT
 #12 1,CC,DT,WDT,IN,PDT,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\testSent2.txt
-#33 100
+33 100
 #33 model1
 #34
 #17 1,3,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\data\testSent2.txt_langModel3.lm
 #17 0,3
 #18 0,0,0,3
 #18 1,0,1,3,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\testSent2.txt_tagged_Input.txt,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\testSent2.txt_tagged_Corpus.txt
-19 1,10,4
+#19 1,10,4
 #19 2,1,4
 #20 0,3
 #21 0,0,0,3
 
-output classifier: report1.txt
+#output classifier: report1.txt
 #output features: feats.txt libsvm
-output features: feats.txt csv
+#output features: feats.txt csv
 
 
 input file : data/testSent2.txt

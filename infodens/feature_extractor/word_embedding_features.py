@@ -3,6 +3,7 @@ import numpy as np
 from scipy import sparse
 import gensim
 
+
 class Word_embedding_features(Feature_extractor):
     
     @featid(33)
@@ -29,19 +30,27 @@ class Word_embedding_features(Feature_extractor):
         if not modelFile:
             model = self.preprocessor.getWord2vecModel(vecSize)
         else:
-            model = gensim.models.Word2Vec.load(modelFile)
+            binary = False
+            if modelFile.endswith(".bin"):
+                binary = True
+            model = gensim.models.KeyedVectors.load_word2vec_format(modelFile, binary=binary)
 
         vecAverages = []
 
         for sentence in self.preprocessor.gettokenizeSents():
             if len(sentence) is 0:
                 #Empty sentence, default is zero vector
-                vecAverages.append([0]*100)
+                vecAverages.append([0]*vecSize)
             else:
                 sentVec = []
                 for word in sentence:
-                    # TODO: Handle OOV
-                    sentVec.append(model[word])
+                    try:
+                        wordVector = model[word]
+                        sentVec.append(wordVector)
+                    except KeyError:
+                        #wordVector = [0]*vecSize
+                        # Skip OOV
+                        continue
                 vecAverages.append(np.mean(sentVec, axis=0))
 
         return sparse.lil_matrix(vecAverages)
