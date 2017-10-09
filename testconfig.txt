@@ -7,34 +7,32 @@ training corpus: data/30k.literature.orig_tran.low.en
 kenlm : /home/gilani/Documents/Github/kenlm/build/bin
 operating language : eng
 threads : 3
-folds : 1
+folds : 3
 #classifiers : Decision_Tree Random_Forest Ada_Boost Ensemble
 classifiers : SVC_linear 
 #classifiers: SVR_linear
 #classifiers : SVC_rbf
 #classifiers : Random_Forest
 #3 0,J,N,V,R
-#3 1,J,N,V,R,testSent2.txt
-#4 1,1
+#3 1,J,N,V,R,data/testSent2.txt_tagged_Input.txt
+4 1,1
 #4 2,1
 #5 1,10
-#5 1,10,1,testSent2.txt
+#5 1,10,1,data/testSent2.txt_tagged_Input.txt
 #6 1,10
 #7 1,10
 #10
 #11
 #12 0,CC,DT,WDT,IN,PDT
-#12 1,CC,DT,WDT,IN,PDT,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\testSent2.txt
-33 100
+#33 100
 #33 model1
 #34
-#17 1,3,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\data\testSent2.txt_langModel3.lm
+#17 1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
 #17 0,3
 #18 0,0,0,3
-#18 1,0,1,3,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\testSent2.txt_tagged_Input.txt,C:\Users\Gilanios 2\Documents\GitHub\B6-SFB1102\testSent2.txt_tagged_Corpus.txt
 #19 1,10,4
 #19 2,1,4
-#20 0,3
+#20 1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
 #21 0,0,0,3
 
 #output classifier: report1.txt

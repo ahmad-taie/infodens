@@ -96,7 +96,7 @@ class Preprocess_Services:
                                                                                      langModelFile, ngram, discount)
         else:
             binaryLib = ("\"{0}lmplz\"".format(self.kenlmBins))
-            print(corpus)
+            #print(corpus)
             commandToRun = "{0} -o {1} <{2} >{3}".format(binaryLib, ngram, corpus, langModelFile)
 
         print("Building Language Model..")

@@ -60,7 +60,7 @@ class Surprisal_features(Feature_extractor):
         arguments = argString.split(',')
         if(int(arguments[0])):
             # Use given langModel
-            langModel = "\"{0}\"".format(arguments[-1])
+            langModel = "{0}".format(arguments[-1])
 
         ngramOrder = int(arguments[1])
 
@@ -125,12 +125,12 @@ class Surprisal_features(Feature_extractor):
         arguments = argString.split(',')
         if int(arguments[0]):
             # Use file of tagged sents (last argument)
-            taggedInput = "\"{0}\"".format(arguments[4])
+            taggedInput = "{0}".format(arguments[4])
         if int(arguments[1]):
             # Next argument
-            langModel = "\"{0}\"".format(arguments[4+int(arguments[0])])
+            langModel = "{0}".format(arguments[4+int(arguments[0])])
         elif int(arguments[2]):
-            taggedCorpus = "\"{0}\"".format(arguments[4+int(arguments[0])])
+            taggedCorpus = "{0}".format(arguments[4+int(arguments[0])])
 
         ngramOrder = int(arguments[3])
 
