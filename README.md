@@ -70,9 +70,20 @@ output features: feats.txt libsvm
 
 ```
 
+# Multilingual runs
+
+The toolkit can be run on multilingual (or parallel) corpora for tasks like Machine translation quality estimation. To do so, provide multiple configuration files as arguments, where each file represents one run of the toolkit with the input files and the required features. The classification/regression parameters are collected from all input configuration files and used on the merged feature output from all runs.
+
+Example:
+
+```
+python infodens.py democonfig.txt config2.txt
+```
+
 # Developer's guide
 
-The tool is mainly designed to ease the tasks of feature engineering, the Wiki contains a simple guide to help researchers code their own features. We also hope to encourage researchers and developers to adapt the code to their needs, for example even change the preprocesser and configurator and use the skeleton of the toolkit for other tasks.
+The tool is mainly designed to ease the tasks of feature engineering. The Wiki contains a simple guide to help researchers code their own features. We also hope to encourage researchers and developers to adapt the code to their needs, for example even change the preprocessor and configurator and use the skeleton of the toolkit for other machine learning tasks.
+We welcome (and encourage) any feedback and inquiries.
 
 
 # List of Features:
