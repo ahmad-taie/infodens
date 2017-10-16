@@ -1,7 +1,7 @@
 
 # INFODENS
 
-This toolkit provides a quick way to generate features from text, and expedites the development of feature engineering tasks.
+This toolkit provides a quick way to generate features from text, and expedites feature engineering tasks.
 
 
 # Setup & Requirements
