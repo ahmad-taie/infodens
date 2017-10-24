@@ -2,9 +2,9 @@ from infodens.controller.controller import Controller
 import sys
 
 
-def infodensRun(configFile):
+def infodensRun(configFiles):
     # Init a Controller.
-    control = Controller(configFile)
+    control = Controller(configFiles)
     # Load the config file
     status, featIds, classifiersList = control.loadConfig()
     # MAIN PROCESS (Extract all features)
@@ -32,13 +32,12 @@ if __name__ == '__main__':
     import platform
     print("Running Python {0}".format(platform.python_version()))
 
-    config = []
+    configs = []
 
     if len(sys.argv) > 1:
-        config = sys.argv[1:]
+        configs = sys.argv[1:]
     else:
-        config.append("testconfig.txt")
+        configs.append("testconfig.txt")
 
-
-    print("Config file(s): {0}".format(config))
-    infodensRun(config)
+    print("Config file(s): {0}".format(configs))
+    infodensRun(configs)

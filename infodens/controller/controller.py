@@ -150,7 +150,7 @@ class Controller:
                           self.classifiersList, self.extractedFeats, self.classesList,
                             self.threadsCount, self.cv_folds)
 
-            validClassifiers = classifying.checkValidClassifier()
+            validClassifiers = classifying.checkParseClassifier()
 
             if validClassifiers:
                 # Continue to call classifiers

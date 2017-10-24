@@ -59,7 +59,7 @@ threads : 3
 folds : 1
 
 # Provide the classifiers required seprated by space
-#classifiers : Decision_Tree Random_Forest Ada_Boost Ensemble
+#classifiers : Decision_tree Random_forest Ada_boost Ensemble
 classifiers : SVC_linear
 
 # The classification report output

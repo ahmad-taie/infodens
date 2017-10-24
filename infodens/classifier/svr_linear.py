@@ -45,6 +45,17 @@ class SVR_linear(Classifier):
 
 		self.model = clf.best_estimator_
 
+	def rankFeats(self, rankN=-1):
+		# Override for regression and classifiers with readily available
+		# Rankers
+		from sklearn.feature_selection import mutual_info_regression
+		rankReport = mutual_info_regression(self.X, self.y)
+
+		outStr = "Ordered Mutual information and feature index:\n"
+
+		return outStr + str(sorted(enumerate(rankReport)
+								   , key=lambda x: x[1], reverse=True)[:rankN])
+
 	def runClassifier(self):
 		""" Overriding default running"""
 		all_mse = []

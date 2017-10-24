@@ -77,7 +77,7 @@ class Configurator:
             elif "classif" in configLine:
                 startInp = configLine.index(':')
                 configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
+                configLine = configLine.strip().split(',')
                 self.classifiersList = configLine
             elif "training corpus" in configLine:
                 startInp = configLine.index(':')

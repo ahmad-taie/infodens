@@ -14,7 +14,10 @@ from infodens.classifier.classifier import Classifier
 class Classifier_manager:
 
     def __init__(self, ids, dSet, labs, threads=1, cv_folds=1):
-        self.classifierIDs = ids
+        self.classifierArgs = ids
+        self.classifierIDs = []
+        self.classifRank = []
+        self.classifRankN = []
         self.dataSet = dSet
         self.labels = labs
         sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
@@ -22,12 +25,36 @@ class Classifier_manager:
         self.classifyModules = []
         self.cv_folds = cv_folds
         self.threadsCount = threads
-        self.returnClassifiers()
+        self.availClassifiers = self.returnClassifiers()
 
-    def checkValidClassifier(self):
+    def checkParseClassifier(self):
+        # Class_X r 100, Class_Y, Class_Z r
         #print(self.availClassifiers)
-        for classifID in self.classifierIDs:
-            if classifID not in self.availClassifiers:
+        for classifArg in self.classifierArgs:
+            classifArgs = classifArg.strip().split()
+            #print(classifArgs)
+            if classifArgs[0] in self.availClassifiers:
+                self.classifierIDs.append(classifArgs[0])
+                if len(classifArgs) > 1:
+                    if classifArgs[1] is "r":
+                        self.classifRank.append(True)
+                    else:
+                        print("Not a valid rank argument")
+                        return 0
+                    if len(classifArgs) > 2:
+                        if classifArgs[2].isdigit():
+                            self.classifRankN.append(int(classifArgs[2]))
+                        else:
+                            print("Not a valid number of TopN features.")
+                            return 0
+                    else:
+                        self.classifRankN.append(-1)
+                else:
+                    # No required ranking for this classifier
+                    self.classifRank.append(False)
+                    self.classifRankN.append(-1)
+            else:
+                # Not a valid classifier
                 return 0
         return 1
 
@@ -46,10 +73,11 @@ class Classifier_manager:
                 module = "infodens.classifier."+ file
                 importlib.import_module(module)
                 self.classifyModules.append(file)
-        self.availClassifiers = [cls.__name__ for cls in Classifier.__subclasses__()]
-
+        return [cls.__name__ for cls in Classifier.__subclasses__()]
 
     def callClassifiers(self):
+
+        rank = False
 
         classifierObjs = []
         for classif in self.classifierIDs:
@@ -61,7 +89,15 @@ class Classifier_manager:
             classifierObjs.append(class_(self.dataSet, self.labels, self.threadsCount, self.cv_folds))
 
         classifReports = []
-        for classif in classifierObjs:
-            classifReports.append(self.runClassifier(classif))
+
+        for i in range(0, len(classifierObjs)):
+            classif = classifierObjs[i]
+            report = self.runClassifier(classif)
+            if self.classifRank[i]:
+                print("Ranking features...")
+                report += classif.rankFeats(self.classifRankN[i])
+                print("Ranking done.")
+
+            classifReports.append(report)
 
         return '\n'.join(classifReports)

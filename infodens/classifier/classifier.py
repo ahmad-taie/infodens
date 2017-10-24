@@ -24,6 +24,7 @@ class Classifier(object):
         
     X = []
     y = []
+    rankReport = []
        
     Xtrain = []
     ytrain = []
@@ -59,7 +60,20 @@ class Classifier(object):
         y_pred = self.predict()
         return accuracy_score(self.ytest, y_pred), precision_score(self.ytest, y_pred),\
                recall_score(self.ytest, y_pred), f1_score(self.ytest, y_pred)
-        
+
+    def rankFeats(self, rankN=-1):
+        # Override for regression and classifiers with readily available
+        # Rankers
+        from sklearn.feature_selection import mutual_info_classif
+        ranking = mutual_info_classif(self.X, self.y)
+
+        outStr = "Ordered Mutual information and feature index:\n"
+
+        self.rankReport = outStr + str(sorted(enumerate(ranking),
+                                              key=lambda x: x[1], reverse=True)[:rankN])
+
+        return self.rankReport
+
     def runClassifier(self):
         """ Run the provided classifier."""
         acc = []; pre = []; rec = []; fsc = []
