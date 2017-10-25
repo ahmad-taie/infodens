@@ -77,8 +77,6 @@ class Classifier_manager:
 
     def callClassifiers(self):
 
-        rank = False
-
         classifierObjs = []
         for classif in self.classifierIDs:
             for module in self.classifyModules:

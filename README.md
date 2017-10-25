@@ -58,8 +58,12 @@ threads : 3
 # How many folds of Cross validation
 folds : 1
 
-# Provide the classifiers required seprated by space
-#classifiers : Decision_tree Random_forest Ada_boost Ensemble
+# Provide the names of classifiers required seprated by a comma
+#classifiers : Decision_tree, Random_forest, Ada_boost, Ensemble
+# The SVR_linear regressor is also available for regression
+# classifiers: SVR_linear r 100
+# The r after the name is the argument for feature ranking
+# Follow it with N (optional) the top N ranking features
 classifiers : SVC_linear
 
 # The classification report output

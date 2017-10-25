@@ -24,8 +24,7 @@ class Classifier(object):
         
     X = []
     y = []
-    rankReport = []
-       
+
     Xtrain = []
     ytrain = []
        
