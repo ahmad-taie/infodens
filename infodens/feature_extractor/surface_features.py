@@ -31,7 +31,7 @@ class Surface_features(Feature_extractor):
                 aveWordLen[i] = (float(length) / len(sentence))
             i += 1
 
-        return aveWordLen
+        return aveWordLen, "Average sentence length"
 
     @featid(10)
     def sentenceLength(self, argString, preprocessReq=0):

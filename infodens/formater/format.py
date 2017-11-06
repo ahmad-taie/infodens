@@ -9,9 +9,16 @@ from .format_writer import Format_writer
 
 class Format:
 
-    def __init__(self, fsX, fsy):
+    def __init__(self, fsX, fsy, featDescrips):
         self.X = fsX
         self.Y = fsy
+        self.featDescriptions = featDescrips
+
+    def outputDescriptor(self, fileName):
+        with open(fileName, 'w') as classifOut:
+            for i in range(0, len(self.featDescriptions)):
+                classifOut.write("Feature Descriptors for run {0}:"
+                                 " \r\n {1}".format(i, self.featDescriptions[i]))
         
     def libsvmFormat(self, fileName):
         aformater = Format_writer()
@@ -36,6 +43,7 @@ class Format:
         else:
             self.libsvmFormat(fileName)
             print("Defaulting to libsvm format.")
+        self.outputDescriptor("{0}_descriptors.txt".format(fileName))
         print("Feature file written.")
 
 

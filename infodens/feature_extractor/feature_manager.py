@@ -14,9 +14,12 @@ def runFeatureMethod(mtdCls, featureID,
     instance = mtdCls(preprocessor)
     methd = getattr(instance, featureName)
     feat = methd(featureArgs, preprocessReq)
-    feateX = "Extracted feature: " + str(featureID) + " - " + str(featureName)
+    feateX = "Extracted feature: {0} - {1}".format(featureID, featureName)
     if not preprocessReq:
         print(feateX)
+        # Not a tuple then add a feature descriptor
+        if not isinstance(feat, tuple):
+            return feat, "FeatID {0} - {1}".format(featureID, featureName)
     return feat
 
 
@@ -42,11 +45,33 @@ class Feature_manager:
         self.threads = configurator.threadsCount
         self.sentCount = sentCount
 
+        self.featDescriptors = []
+
         sys.path.append(os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
         self.pathname = os.path.dirname(os.path.abspath(feat_extr.__file__))
 
         # Make class variable
         self.idClassmethod, self.allFeatureIds = self.idClassDictionary()
+
+    def separateFeatAndDescrip(self, featAndDesc):
+
+        feats = []
+        featIndex = 0
+
+        for tuple in featAndDesc:
+            feats.append(tuple[0])
+            if tuple[0].get_shape()[1] > 1:
+                self.featDescriptors.append("From {0} to {1} features: {2}".format(
+                    featIndex,
+                    featIndex+tuple[0].get_shape()[1] - 1,
+                    tuple[1]))
+            else:
+                self.featDescriptors.append("Feature {0}: {1}".format(
+                    featIndex, tuple[1]))
+            featIndex = featIndex + tuple[0].get_shape()[1]
+
+        #print(self.featDescriptors)
+        return feats
 
     def checkFeatValidity(self):
         ''' Check if requested feature exists. '''
@@ -135,11 +160,13 @@ class Feature_manager:
 
         print("All features extracted. ")
 
+        features = self.separateFeatAndDescrip(featuresExtracted)
+
         #Format into scikit format (Each row is a sen)
-        output = sparse.hstack(featuresExtracted, "lil")
+        output = sparse.hstack(features, "lil")
 
         featCount = output.get_shape()[1]
         featVec = "Feature vector dimensions: " + str(self.sentCount) + "x" + str(featCount)
         print(featVec)
 
-        return output
+        return output, self.featDescriptors

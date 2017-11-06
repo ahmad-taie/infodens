@@ -102,7 +102,7 @@ class Bag_of_ngrams_features(Feature_extractor):
         ngramLength = "Ngram feature vector length: " + str(numberOfFeatures)
         print(ngramLength)
 
-        return ngramFeatures
+        return ngramFeatures, finNgram
 
     @featid(4)
     def ngramBagOfWords(self, argString, preprocessReq=0):

@@ -26,6 +26,7 @@ class Controller:
         # array format of dataset and labels for classifying
         self.numSentences = 0
         self.extractedFeats = []
+        self.featDescriptors = []
         self.classesList = []
 
     def parseMergeConfigs(self):
@@ -113,7 +114,9 @@ class Controller:
             validFeats = manageFeatures.checkFeatValidity()
             if validFeats:
                 # Continue to call features
-                extractedFeats.append(manageFeatures.callExtractors())
+                feats, descriptors = manageFeatures.callExtractors()
+                extractedFeats.append(feats)
+                self.featDescriptors.append(descriptors)
             else:
                 # terminate
                 print("Requested Feature ID not available.")
@@ -121,7 +124,6 @@ class Controller:
         self.extractedFeats = featman.mergeFeats(extractedFeats)
         self.scaleFeatures()
         self.outputFeatures()
-
         print("Feature Extraction Done. ")
 
         return 1
@@ -135,7 +137,8 @@ class Controller:
         """Output features if requested."""
 
         if self.featOutput:
-            formatter = format.Format(self.extractedFeats, self.classesList)
+            formatter = format.Format(self.extractedFeats, self.classesList,
+                                      self.featDescriptors)
             # if format is not set in config, will use a default libsvm output.
             formatter.outFormat(self.featOutput, self.featOutFormat)
         else:
@@ -148,7 +151,7 @@ class Controller:
             # Classify if the parameters needed are specified
             classifying = classifier_manager.Classifier_manager(
                           self.classifiersList, self.extractedFeats, self.classesList,
-                            self.threadsCount, self.cv_folds)
+                          self.threadsCount, self.cv_folds)
 
             validClassifiers = classifying.checkParseClassifier()
 
