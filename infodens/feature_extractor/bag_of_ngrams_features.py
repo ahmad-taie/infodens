@@ -53,8 +53,8 @@ class Bag_of_ngrams_features(Feature_extractor):
 
         return 1
 
-    def ngramExtraction(self, type, argString, preprocessReq):
-        status, n, freq, filePOS = self.ngramArgumentCheck(argString, type)
+    def ngramExtraction(self, ngramType, argString, preprocessReq):
+        status, n, freq, filePOS = self.ngramArgumentCheck(argString, ngramType)
         if not status:
             # Error in argument.
             return
@@ -64,13 +64,13 @@ class Bag_of_ngrams_features(Feature_extractor):
             self.preprocessReqHandle(type, filePOS)
             return 1
 
-        if type is "plain":
+        if ngramType is "plain":
             listOfSentences = self.preprocessor.gettokenizeSents()
-        elif type is "POS":
+        elif ngramType is "POS":
             listOfSentences = self.preprocessor.getPOStagged(filePOS)
-        elif type is "lemma":
+        elif ngramType is "lemma":
             listOfSentences = self.preprocessor.getLemmatizedSents()
-        elif type is "mixed":
+        elif ngramType is "mixed":
             listOfSentences = self.preprocessor.getMixedSents()
         else:
             #Assume plain
@@ -102,7 +102,8 @@ class Bag_of_ngrams_features(Feature_extractor):
         ngramLength = "Ngram feature vector length: " + str(numberOfFeatures)
         print(ngramLength)
 
-        return ngramFeatures, finNgram
+        return ngramFeatures, "{0} ngrams with arguments: {1} . Features: {2}".format(
+            ngramType, argString, finNgram)
 
     @featid(4)
     def ngramBagOfWords(self, argString, preprocessReq=0):

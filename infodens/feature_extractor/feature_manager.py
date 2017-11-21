@@ -19,7 +19,8 @@ def runFeatureMethod(mtdCls, featureID,
         print(feateX)
         # Not a tuple then add a feature descriptor
         if not isinstance(feat, tuple):
-            return feat, "FeatID {0} - {1}".format(featureID, featureName)
+            return feat, "FeatID {0} - {1} with arguments: {2}".format(featureID, featureName,
+                                                                       featureArgs)
     return feat
 
 
