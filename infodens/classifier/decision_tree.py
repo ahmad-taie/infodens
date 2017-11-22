@@ -11,7 +11,7 @@ from sklearn import tree
 
 class Decision_tree(Classifier):
 
-    classifierName = 'Decision Tree'
+    classifierName = 'DecisionTree'
     n_estimators = 20
 
     def train(self):

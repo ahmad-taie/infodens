@@ -14,7 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 class Random_forest(Classifier):
     
-    classifierName = 'Random Forest'
+    classifierName = 'RandomForest'
     n_estimators = 20
         
     def train(self):

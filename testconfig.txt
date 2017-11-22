@@ -13,7 +13,7 @@ folds : 3
 #classifiers: SVR_linear r 5
 classifiers: SVC_linear
 #classifiers : SVC_rbf
-#classifiers : Random_Forest
+persist models: testClass.skl
 #3 0,J,N,V,R
 #3 1,J,N,V,R,data/testSent2.txt_tagged_Input.txt
 4 1,1
@@ -36,8 +36,8 @@ classifiers: SVC_linear
 #20 1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
 #21 0,0,0,3
 
-output classifier: report1.txt
-output features: feats.txt libsvm
+#output classifier: report1.txt
+#output features: feats.txt libsvm
 #output features: feats.txt csv
 
 

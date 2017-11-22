@@ -43,7 +43,7 @@ class Format:
         else:
             self.libsvmFormat(fileName)
             print("Defaulting to libsvm format.")
-        self.outputDescriptor("{0}_descriptors.txt".format(fileName))
+        self.outputDescriptor("feat_descriptors_{0}".format(fileName))
         print("Feature file written.")
 
 

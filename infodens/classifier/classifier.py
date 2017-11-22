@@ -55,6 +55,12 @@ class Classifier(object):
     def predict(self):
         return self.model.predict(self.Xtest)
 
+    def persist(self, fileName):
+        import joblib
+        output = "{0}_{1}".format(self.classifierName, fileName)
+
+        joblib.dump(self.model, output)
+
     def evaluate(self):
         y_pred = self.predict()
         return accuracy_score(self.ytest, y_pred), precision_score(self.ytest, y_pred),\

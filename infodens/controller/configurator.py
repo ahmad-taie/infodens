@@ -9,6 +9,7 @@ class Configurator:
         self.featargs = []
         self.inputClasses = []
         self.classifiersList = []
+        self.persistClassif = ""
         self.inputFile = ""
         self.classifReport = ""
         self.corpusLM = ""
@@ -110,6 +111,11 @@ class Configurator:
                 configLine = configLine.strip().split()
                 self.language = configLine
                 #print(self.language)
+            elif "persist" in configLine:
+                startInp = configLine.index(':')
+                configLine = configLine[startInp + 1:]
+                configLine = configLine.strip().split()
+                self.persistClassif = configLine[0]
             elif "thread" in configLine:
                 startInp = configLine.index(':')
                 configLine = configLine[startInp + 1:]

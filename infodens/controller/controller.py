@@ -18,6 +18,7 @@ class Controller:
         self.inputClasses = ""
         self.cv_folds = 1
         self.classifiersList = []
+        self.persistModelFile = ""
         self.threadsCount = 1
         self.featOutput = ""
         self.featOutFormat = ""
@@ -51,6 +52,8 @@ class Controller:
                 self.featOutFormat = config.featOutFormat
             if config.classifReport:
                 self.classifReport = config.classifReport
+            if config.persistClassif:
+                self.persistModelFile = config.persistClassif
 
             # Classifiers in different configs are merged
             if config.classifiersList:
@@ -147,11 +150,13 @@ class Controller:
     def classifyFeats(self):
         """Instantiate a classifier Manager then run it. """
 
+        print("Starting classification...")
+
         if self.inputClasses and self.classifiersList:
             # Classify if the parameters needed are specified
             classifying = classifier_manager.Classifier_manager(
                           self.classifiersList, self.extractedFeats, self.classesList,
-                          self.threadsCount, self.cv_folds)
+                          self.threadsCount, self.cv_folds, self.persistModelFile)
 
             validClassifiers = classifying.checkParseClassifier()
 
@@ -159,6 +164,7 @@ class Controller:
                 # Continue to call classifiers
                 reportOfClassif = classifying.callClassifiers()
                 print(reportOfClassif)
+                print("Classification done.")
                 # Write output if file specified
                 if self.classifReport:
                     with open(self.classifReport, 'w') as classifOut:

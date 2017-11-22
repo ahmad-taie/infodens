@@ -17,7 +17,7 @@ class SVC_rbf(Classifier):
     classdocs
     '''
 
-    classifierName = 'Support Vector Machine'
+    classifierName = 'SVC_rbf'
     C = np.logspace(-2, 10, 13)
     gamma = np.logspace(-9, 3, 13)
 

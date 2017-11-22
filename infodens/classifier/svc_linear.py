@@ -17,7 +17,7 @@ class SVC_linear(Classifier):
     classdocs
     '''
 
-    classifierName = 'Support Vector Machine'
+    classifierName = 'SVC_linear'
     C = np.logspace(-5.0, 5.0, num=10, endpoint=True, base=2)
 
     def train(self):

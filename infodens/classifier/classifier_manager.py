@@ -13,11 +13,12 @@ from infodens.classifier.classifier import Classifier
 
 class Classifier_manager:
 
-    def __init__(self, ids, dSet, labs, threads=1, cv_folds=1):
+    def __init__(self, ids, dSet, labs, threads=1, cv_folds=1, persistFile=""):
         self.classifierArgs = ids
         self.classifierIDs = []
         self.classifRank = []
         self.classifRankN = []
+        self.persistFile = persistFile
         self.dataSet = dSet
         self.labels = labs
         sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
@@ -29,7 +30,7 @@ class Classifier_manager:
 
     def checkParseClassifier(self):
         # Class_X r 100, Class_Y, Class_Z r
-        #print(self.availClassifiers)
+        #print(self.availCl[assifiers)
         for classifArg in self.classifierArgs:
             classifArgs = classifArg.strip().split()
             #print(classifArgs)
@@ -63,6 +64,11 @@ class Classifier_manager:
         classifReport += ":\n"
         classifReport += classifierToRun.runClassifier()
         classifReport += "\n"
+
+        # Given file name to persist, persist classifier to file
+        if self.persistFile:
+            classifierToRun.persist(self.persistFile)
+
         return classifReport
 
     def returnClassifiers(self):

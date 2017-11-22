@@ -18,7 +18,7 @@ class SVR_linear(Classifier):
 	classdocs
 	'''
 
-	classifierName = 'Support Vector Regressor'
+	classifierName = 'SVR_linear'
 	C = np.logspace(-5.0, 5.0, num=10, endpoint=True, base=2)
 
 	def evaluate(self):
