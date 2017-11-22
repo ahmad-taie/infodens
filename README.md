@@ -65,6 +65,9 @@ folds : 1
 # The r after the name is the argument for feature ranking
 # Follow it with N (optional) the top N ranking features
 classifiers : SVC_linear
+# To persist the models simply give a file name to the persist 
+# parameter. The names of the classifiers will be preappended
+persist model: testClass.skl
 
 # The classification report output
 output classifier: report1.txt
