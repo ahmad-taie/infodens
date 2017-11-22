@@ -63,8 +63,10 @@ class Classifier(object):
 
     def evaluate(self):
         y_pred = self.predict()
-        return accuracy_score(self.ytest, y_pred), precision_score(self.ytest, y_pred),\
-               recall_score(self.ytest, y_pred), f1_score(self.ytest, y_pred)
+        return accuracy_score(self.ytest, y_pred),\
+               precision_score(self.ytest, y_pred, average="weighted"),\
+               recall_score(self.ytest, y_pred, average="weighted"),\
+               f1_score(self.ytest, y_pred, average="weighted")
 
     def rankFeats(self, rankN=-1):
         # Override for regression and classifiers with readily available

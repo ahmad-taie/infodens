@@ -40,7 +40,6 @@ persist models: testClass.skl
 #output features: feats.txt libsvm
 #output features: feats.txt csv
 
-
 input file : data/testSent2.txt
 input classes:  data/testSentClasses2.txt
 #input classes: data/testSentRegres2.txt
