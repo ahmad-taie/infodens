@@ -87,6 +87,16 @@ Example:
 python infodens.py democonfig.txt config2.txt
 ```
 
+# Predict runs
+
+The module ```infopredict``` can be used to give labels for unseen data. To use it, you first need the persisted model(s) from a normal run on a training input (see how to get them in the optional parameters of the config file above). You then provide a new config file with the input file you need to predict labels for and the same features used for training. The script will extract the features for that file, and use the model(s) to predict the labels. It will then output the labels in a text file with the name you provide as an argument. The label files from different models will be preappended with the model's name.
+
+Example:
+
+```
+python infopredict.py democonfig.txt testlabels.lb SVC_linear_model.skl
+```
+
 # Developer's guide
 
 The tool is mainly designed to ease the tasks of feature engineering. The Wiki contains a simple guide to help researchers code their own features. We also hope to encourage researchers and developers to adapt the code to their needs, for example even change the preprocessor and configurator and use the skeleton of the toolkit for other machine learning tasks.

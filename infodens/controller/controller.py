@@ -103,7 +103,7 @@ class Controller:
                 return True
         return False
 
-    def manageFeatures(self):
+    def manageFeatures(self, returnFeats=False):
         """Init and call a feature manager. """
 
         for configurator in self.configurators:
@@ -126,8 +126,13 @@ class Controller:
                 return 0
         self.extractedFeats = featman.mergeFeats(extractedFeats)
         self.scaleFeatures()
-        self.outputFeatures()
+
         print("Feature Extraction Done. ")
+
+        if returnFeats:
+            return self.extractedFeats
+
+        self.outputFeatures()
 
         return 1
 
