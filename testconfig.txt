@@ -13,13 +13,13 @@ folds : 3 0.3
 #classifiers: SVR_linear r 5
 classifiers: SVC_linear
 #classifiers : SVC_rbf
-persist models: testClass.skl -f
+#persist models: testClass.skl -f
 #3 0,J,N,V,R
 #3 1,J,N,V,R,data/testSent2.txt_tagged_Input.txt
 4 1,1
 #4 2,1
 #5 1,10
-#5 1,10,1,data/testSent2.txt_tagged_Input.txt
+#5 1,10,data/testSent2.txt_tagged_Input.txt
 #6 1,10
 #7 1,10
 #10
@@ -42,6 +42,7 @@ persist models: testClass.skl -f
 
 input file : data/testSent2.txt
 input classes:  data/testSentClasses2.txt
+
 #input classes: data/testSentRegres2.txt
 #input files : literature.fr literature.classes
 # input and classifiers are parsed after ':'

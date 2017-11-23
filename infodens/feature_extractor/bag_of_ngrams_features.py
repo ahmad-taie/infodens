@@ -13,11 +13,12 @@ from scipy import sparse
 
 class Bag_of_ngrams_features(Feature_extractor):
 
-    def ngramArgumentCheck(self, argString, type):
+    def ngramArgumentCheck(self, argString, typeNgram):
         status = 1
         n = 0
         freq = 0
-        filePOS = 0
+        trainTokens = ""
+        taggedInput = ""
 
         argStringList = argString.split(',')
         if argStringList[0].isdigit():
@@ -29,55 +30,78 @@ class Bag_of_ngrams_features(Feature_extractor):
             if argStringList[1].isdigit():
                 freq = int(argStringList[1])
             else:
-                print('Error: frequency should be an integer')
+                print('Error: cut-off frequency should be an integer')
                 status = 0
-            #POS file
-            if type is "POS" and len(argStringList) > 2:
-                if int(argStringList[2]):
-                    filePOS = argStringList[3]
+
+            # Train file and taggedFile
+            if len(argStringList) > 2:
+                if typeNgram is "plain":
+                    trainTokens = argStringList[2]
+                else:
+                    taggedInput = argStringList[2]
+                    if len(argStringList) > 3:
+                        trainTokens = argStringList[3]
         else:
             freq = 1
-        return status, n, freq, filePOS
 
-    def preprocessReqHandle(self, type, filePOS):
-        if type is "plain":
-            listOfSentences = self.preprocessor.gettokenizeSents()
-        elif type is "POS":
-            listOfSentences = self.preprocessor.getPOStagged(filePOS)
-        elif type is "lemma":
-            listOfSentences = self.preprocessor.getLemmatizedSents()
-        elif type is "mixed":
-            listOfSentences = self.preprocessor.getMixedSents()
+        return status, n, freq, trainTokens, taggedInput
+
+    def preprocessReqHandle(self, typeNgram):
+        if typeNgram is "plain":
+            self.preprocessor.gettokenizeSents()
+        elif typeNgram is "POS":
+            self.preprocessor.getPOStagged()
+        elif typeNgram is "lemma":
+            self.preprocessor.getLemmatizedSents()
+        elif typeNgram is "mixed":
+            self.preprocessor.getMixedSents()
         else:
             #Assume plain
-            listOfSentences = self.preprocessor.gettokenizeSents()
+            self.preprocessor.gettokenizeSents()
 
         return 1
 
     def ngramExtraction(self, ngramType, argString, preprocessReq):
-        status, n, freq, filePOS = self.ngramArgumentCheck(argString, ngramType)
+        status, n, freq, trainTokens, taggedInp = self.ngramArgumentCheck(argString, ngramType)
         if not status:
             # Error in argument.
             return
 
         # Handle preprocessing requests and exit
         if preprocessReq:
-            self.preprocessReqHandle(type, filePOS)
-            return 1
+            if trainTokens or taggedInp:
+                # Will handle in-function no prep required
+                return 1
+            else:
+                return self.preprocessReqHandle(ngramType)
 
-        if ngramType is "plain":
-            listOfSentences = self.preprocessor.gettokenizeSents()
-        elif ngramType is "POS":
-            listOfSentences = self.preprocessor.getPOStagged(filePOS)
-        elif ngramType is "lemma":
-            listOfSentences = self.preprocessor.getLemmatizedSents()
-        elif ngramType is "mixed":
-            listOfSentences = self.preprocessor.getMixedSents()
+        # Sentences to get ngrams for
+        listOfSentences = []
+
+        if taggedInp:
+            listOfSentences = self.preprocessor.prep_servs.getFileTokens(taggedInp)
         else:
-            #Assume plain
-            listOfSentences = self.preprocessor.gettokenizeSents()
+            if ngramType is "plain":
+                listOfSentences = self.preprocessor.gettokenizeSents()
+            elif ngramType is "POS":
+                listOfSentences = self.preprocessor.getPOStagged()
+            elif ngramType is "lemma":
+                listOfSentences = self.preprocessor.getLemmatizedSents()
+            elif ngramType is "mixed":
+                listOfSentences = self.preprocessor.getMixedSents()
+            else:
+                #Assume plain
+                listOfSentences = self.preprocessor.gettokenizeSents()
 
-        finNgram, numberOfFeatures = self.preprocessor.prep_servs.buildNgrams(n, freq, listOfSentences)
+        if not trainTokens:
+            trainSentences = listOfSentences
+        else:
+            # Given file with tokens, extract tokens
+            trainSentences = self.preprocessor.prep_servs.getFileTokens(trainTokens)
+
+
+        finNgram, numberOfFeatures = self.preprocessor.\
+                                    prep_servs.buildNgrams(n, freq, trainSentences)
 
         print("Ngrams built.")
 
