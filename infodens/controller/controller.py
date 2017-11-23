@@ -17,8 +17,10 @@ class Controller:
         # classification parameters are fixed across Multilingual runs
         self.inputClasses = ""
         self.cv_folds = 1
+        self.cv_Percent = 0
         self.classifiersList = []
         self.persistModelFile = ""
+        self.persistOnFull = False
         self.threadsCount = 1
         self.featOutput = ""
         self.featOutFormat = ""
@@ -39,8 +41,12 @@ class Controller:
             # Policy is to be the greatest
             if config.cv_folds > self.cv_folds:
                 self.cv_folds = config.cv_folds
+            if config.cv_Percent > self.cv_Percent:
+                self.cv_Percent = config.cv_Percent
             if config.threadsCount > self.threadsCount:
                 self.threadsCount = config.threadsCount
+            if config.persistOnFull:
+                self.persistOnFull = True
 
             # Only once or last instance
             # Todo: report conflicts
@@ -161,7 +167,8 @@ class Controller:
             # Classify if the parameters needed are specified
             classifying = classifier_manager.Classifier_manager(
                           self.classifiersList, self.extractedFeats, self.classesList,
-                          self.threadsCount, self.cv_folds, self.persistModelFile)
+                          self.threadsCount, self.cv_folds, self.cv_Percent,
+                          self.persistModelFile, self.persistOnFull)
 
             validClassifiers = classifying.checkParseClassifier()
 

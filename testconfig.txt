@@ -6,14 +6,14 @@ training corpus: data/30k.literature.orig_tran.low.en
 #srilm path : /home/gilani/Documents/Github/srilm-1.7.2/bin/i686-m64
 kenlm : /home/gilani/Documents/Github/kenlm/build/bin
 operating language : eng
-threads : 3
-folds : 3
+threads : 4
+folds : 3 0.3
 #classifiers : Decision_tree, Random_forest, Ada_boost, Ensemble
 #classifiers : SVC_linear r 5, Random_forest r 10
 #classifiers: SVR_linear r 5
 classifiers: SVC_linear
 #classifiers : SVC_rbf
-persist models: testClass.skl
+persist models: testClass.skl -f
 #3 0,J,N,V,R
 #3 1,J,N,V,R,data/testSent2.txt_tagged_Input.txt
 4 1,1

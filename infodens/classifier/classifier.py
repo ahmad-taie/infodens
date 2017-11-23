@@ -31,26 +31,31 @@ class Classifier(object):
     Xtest = []
     ytest = []
        
-    splitPercent = 0.3
+    default_splitPercent = 0.3
     n_foldCV = 0
     threadCount = 1
     model = 0
 
     classifierName = ''
     
-    def __init__(self, dataX, datay, threads=1, nCrossValid=2):
+    def __init__(self, dataX, datay, threads=1, nCrossValid=2, cv_Percent=0):
         self.X = dataX
         self.y = datay
         self.threadCount = threads
         self.n_foldCV = nCrossValid
+        if cv_Percent:
+            self.cv_Percent = cv_Percent
+        else:
+            self.cv_Percent = self.default_splitPercent
 
     def shuffle(self):
         self.X, self.y = sklearn.utils.shuffle(self.X, self.y)
         
     def splitTrainTest(self):
-        self.Xtrain, self.Xtest, self.ytrain, self.ytest = model_selection.train_test_split(self.X, self.y,
-                                                                                            test_size=self.splitPercent,
-                                                                                            random_state=0)
+        #print(self.cv_Percent)
+        self.Xtrain, self.Xtest, self.ytrain, self.ytest = \
+            model_selection.train_test_split(self.X, self.y,
+                                             test_size=self.cv_Percent, random_state=0)
 
     def predict(self):
         return self.model.predict(self.Xtest)
@@ -81,11 +86,21 @@ class Classifier(object):
 
         return self.rankReport
 
-    def runClassifier(self):
+    def runClassifier(self, trainOnFull= False):
         """ Run the provided classifier."""
         acc = []; pre = []; rec = []; fsc = []
 
+        if trainOnFull:
+            self.Xtrain = self.X
+            self.ytrain = self.y
+            self.train()
+            return "Trained on Full set."
+
+        print("Cross validation on {:.1%} of data".format(self.cv_Percent))
+
         for i in range(self.n_foldCV):
+            print("Training fold {0} of {1} for {2}..".format(i+1,
+                                        self.n_foldCV, self.classifierName))
             self.shuffle()
             self.splitTrainTest()
             self.train()

@@ -10,6 +10,7 @@ class Configurator:
         self.inputClasses = []
         self.classifiersList = []
         self.persistClassif = ""
+        self.persistOnFull = False
         self.inputFile = ""
         self.classifReport = ""
         self.corpusLM = ""
@@ -20,6 +21,7 @@ class Configurator:
         self.srilmBinPath = ""
         self.kenlmBinPath = ""
         self.cv_folds = 1
+        self.cv_Percent = 0
 
     def parseOutputLine(self, line):
         status = 1
@@ -116,6 +118,9 @@ class Configurator:
                 configLine = configLine[startInp + 1:]
                 configLine = configLine.strip().split()
                 self.persistClassif = configLine[0]
+                if len(configLine) > 1 and "f" in configLine[1]:
+                    self.persistOnFull = True
+                    print("Model will be persisted on full input. ")
             elif "thread" in configLine:
                 startInp = configLine.index(':')
                 configLine = configLine[startInp + 1:]
@@ -140,7 +145,9 @@ class Configurator:
                     folds = int(configLine[0])
                     if folds > 0:
                         self.cv_folds = folds
-
+                        if len(configLine) > 1:
+                            self.cv_Percent = float(configLine[1])
+                            #print("percent{0}".format(self.cv_Percent))
                     else:
                         statusOK = 0
                         print("Number of folds is not a positive integer.")
