@@ -7,7 +7,7 @@ training corpus: data/30k.literature.orig_tran.low.en
 kenlm : /home/gilani/Documents/Github/kenlm/build/bin
 operating language : eng
 threads : 4
-folds : 3 0.2
+folds : 1 0.3
 #classifiers : Decision_tree, Random_forest, Ada_boost, Ensemble
 #classifiers : SVC_linear r 5, Random_forest r 10
 #classifiers: SVR_linear r 5

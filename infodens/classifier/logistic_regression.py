@@ -21,14 +21,16 @@ class Logistic_regression(Classifier):
 
     classifierName = 'Logistic_regression'
 
+    def predict(self):
+        return self.model.predict(self.Xtest), self.model.predict_proba(self.Xtest)
+
     def evaluate(self):
-        y_pred = self.predict()
+        y_pred,t_pred = self.predict()
         return accuracy_score(self.ytest, y_pred),\
                precision_score(self.ytest, y_pred, average="weighted"),\
                recall_score(self.ytest, y_pred, average="weighted"),\
                f1_score(self.ytest, y_pred, average="weighted"),\
-               log_loss(self.ytest, y_pred)
-
+               log_loss(self.ytest, t_pred)
 
     def train(self):
 
