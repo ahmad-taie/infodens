@@ -10,7 +10,7 @@ The tool is written entirely in Python (2.x or 3.x supported) so it runs without
 
 # Running the toolkit
 
-The toolkit takes a configuration file as an input in which all the required parameters are specified.
+The toolkit takes a configuration file (INI format) as an input in which all the required parameters are specified.
 
 To run it:
 
@@ -21,61 +21,85 @@ python infodens.py democonfig.txt
 The mandatory parameters for the config file are:
 
 ```
-input files : inputText
+[Input]
+input file : inputText
 
-featId1 argString1
-featId2 argString2
+[Features]
+featId1 : argString1
+featId2 : argString2
 .
 .
-featIdN argStringN
+featIdN : argStringN
 ```
 where "inputText" is the name of the file containing the sentences (one sentence per line) for which the features will be generated.
 
-The required features are then called by their IDs and after a white space the arguments of that feature are specified if needed.
+The required features are then called by their IDs and after a colon or equals sign the arguments of that feature are specified if needed.
 
 The current supported features are described in the table below.
 
-Optional parameters are shown below with description:
+All the config file parameters in their respective sections are shown below with description:
 
 ```
+[Input]
+
+# Functions as above
+input file : sentences.txt
+
 # Specifies the path for the file containing the class labels.
 # Each line gives the label to the corresponding input sentence
-# This parameter has to be specified for classification, and feature output
+# This parameter has to be specified for classification, and feature output.
 input classes:  data/testSentClasses2.txt
 
 # Here you provide the corpus to be used for building language models and word embeddings
 training corpus: data/testSent2.txt
 
-# If SRILM is prefered for building language models, provide the binaries' path here
-srilm path : srilm/bin
-
 # ISO 639 code of the language of the files
-operating language : eng
+language : eng
+
+[Settings]
+
+# Provide the path for SRILM or KenLM here for the language model features
+srilm : srilm/bin
+kenlm: kenlm/bin
 
 # The maximum number of processes to run
-threads : 3
+threads : 4
 
 # How many folds of Cross validation
-# Followed by split percent (Optional with default as 30%) 
+# followed by split percent (Optional with default as 30%) 
 folds : 3 0.3
 
-# Provide the names of classifiers required seprated by a comma
-#classifiers : Decision_tree, Random_forest, Ada_boost, Ensemble
-# The SVR_linear regressor is also available for regression
-# classifiers: SVR_linear r 100
-# The r after the name is the argument for feature ranking
-# Follow it with N (optional) the top N ranking features
-classifiers : SVC_linear
+[Output]
+
 # To persist the models simply give a file name to the persist 
 # parameter. The names of the classifiers will be preappended.
-# Add -f to train on full input before persisting (Optional)
+# Add -f to train on the full input before persisting (Optional)
 persist model: testClass.skl -f
 
 # The classification report output
 output classifier: report1.txt
 
-# feature output file and format (libsvm and arff supported)
+# feature output file and format (libsvm, csv, and arff supported)
 output features: feats.txt libsvm
+
+[Features]
+# As described above
+1
+2
+4:1,1
+4:2,1
+
+[Classifiers]
+
+# Provide the names of classifiers required each on a line (case sensitive)
+# Available classifiers : Decision_tree, Random_forest, Ada_boost, Ensemble
+# The SVR_linear regressor is also available for regression
+SVR_linear
+
+# The r after the name is the argument for feature ranking
+# Follow it with N (optional) for only the top N ranking features
+SVC_linear: r 5
+
 
 ```
 

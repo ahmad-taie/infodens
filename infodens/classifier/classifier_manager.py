@@ -13,10 +13,10 @@ from infodens.classifier.classifier import Classifier
 
 class Classifier_manager:
 
-    def __init__(self, ids, dSet, labs, threads=1, cv_folds=1, cv_Percent = 0,
+    def __init__(self, classifs, classifArgs, dSet, labs, threads=1, cv_folds=1, cv_Percent = 0,
                  persistFile="", persistOnFull=False):
-        self.classifierArgs = ids
-        self.classifierIDs = []
+        self.classifierArgs = classifArgs
+        self.classifierIDs = classifs
         self.classifRank = []
         self.classifRankN = []
         self.persistFile = persistFile
@@ -33,33 +33,35 @@ class Classifier_manager:
 
     def checkParseClassifier(self):
         # Class_X r 100, Class_Y, Class_Z r
-        #print(self.availCl[assifiers)
-        for classifArg in self.classifierArgs:
-            classifArgs = classifArg.strip().split()
-            #print(classifArgs)
-            if classifArgs[0] in self.availClassifiers:
-                self.classifierIDs.append(classifArgs[0])
-                if len(classifArgs) > 1:
-                    if classifArgs[1] is "r":
-                        self.classifRank.append(True)
-                    else:
-                        print("Not a valid rank argument")
-                        return 0
-                    if len(classifArgs) > 2:
-                        if classifArgs[2].isdigit():
-                            self.classifRankN.append(int(classifArgs[2]))
-                        else:
-                            print("Not a valid number of TopN features.")
-                            return 0
-                    else:
-                        self.classifRankN.append(-1)
-                else:
-                    # No required ranking for this classifier
-                    self.classifRank.append(False)
-                    self.classifRankN.append(-1)
-            else:
+
+        # Check valid classifiers
+        for classif in self.classifierIDs:
+            if classif not in self.availClassifiers:
                 # Not a valid classifier
                 return 0
+
+        for classifArg in self.classifierArgs:
+            #print(classifArgs)
+            if classifArg:
+                classifArgs = classifArg.strip().split()
+                if classifArgs[0] is "r":
+                    self.classifRank.append(True)
+                else:
+                    print("Not a valid rank argument")
+                    return 0
+                if len(classifArgs) > 1:
+                    if classifArgs[1].isdigit():
+                        self.classifRankN.append(int(classifArgs[1]))
+                    else:
+                        print("Not a valid number of TopN features.")
+                        return 0
+                else:
+                    # No topN, rank all feats
+                    self.classifRankN.append(-1)
+            else:
+                # No required ranking for this classifier
+                self.classifRank.append(False)
+                self.classifRankN.append(-1)
         return 1
 
     def runClassifier(self, classifierToRun):

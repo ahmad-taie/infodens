@@ -19,6 +19,7 @@ class Controller:
         self.cv_folds = 1
         self.cv_Percent = 0
         self.classifiersList = []
+        self.classifierArgs = []
         self.persistModelFile = ""
         self.persistOnFull = False
         self.threadsCount = 1
@@ -64,8 +65,9 @@ class Controller:
             # Classifiers in different configs are merged
             if config.classifiersList:
                 self.classifiersList.extend(config.classifiersList)
+                self.classifierArgs.extend(config.classifierArgs)
 
-        self.classifiersList = list(set(self.classifiersList))
+        #self.classifiersList = list(set(self.classifiersList))
 
         return allFeats
 
@@ -77,15 +79,15 @@ class Controller:
 
         # Extract featureID and feature Argument string
         for configFile in self.configFiles:
-            with open(configFile) as config:
+            #with open(configFile) as config:
                 # Parse the config file
-                configurator = Configurator()
-                statusOK = configurator.parseConfig(config)
-                self.configurators.append(configurator)
+            configurator = Configurator()
+            statusOK = configurator.parseConfig(configFile)
+            self.configurators.append(configurator)
 
-                if not configurator.inputFile and statusOK:
-                    print("Error, Missing input files.")
-                    exit()
+            if not configurator.inputFile and statusOK:
+                print("Error, Missing input files.")
+                exit()
 
         mergedFeats = self.parseMergeConfigs()
 
@@ -166,8 +168,8 @@ class Controller:
         if self.inputClasses and self.classifiersList:
             # Classify if the parameters needed are specified
             classifying = classifier_manager.Classifier_manager(
-                          self.classifiersList, self.extractedFeats, self.classesList,
-                          self.threadsCount, self.cv_folds, self.cv_Percent,
+                          self.classifiersList, self.classifierArgs, self.extractedFeats,
+                          self.classesList, self.threadsCount, self.cv_folds, self.cv_Percent,
                           self.persistModelFile, self.persistOnFull)
 
             validClassifiers = classifying.checkParseClassifier()

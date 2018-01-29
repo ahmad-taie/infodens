@@ -1,4 +1,5 @@
 import os.path
+import configparser
 
 
 class Configurator:
@@ -9,6 +10,7 @@ class Configurator:
         self.featargs = []
         self.inputClasses = []
         self.classifiersList = []
+        self.classifierArgs = []
         self.persistClassif = ""
         self.persistOnFull = False
         self.inputFile = ""
@@ -23,153 +25,104 @@ class Configurator:
         self.cv_folds = 1
         self.cv_Percent = 0
 
-    def parseOutputLine(self, line):
-        status = 1
-        startInp = line.index(':')
-        outputLine = line[startInp + 1:]
-        outputLine = outputLine.strip().split()
-        if "classif" in line and not self.classifReport:
-            self.classifReport = outputLine[0]
-        elif "feat" in line and not self.featOutput:
-            if len(outputLine) == 2:
-                self.featOutput = outputLine[0]
-                self.featOutFormat = outputLine[1]
-            elif len(outputLine) == 1:
-                self.featOutput = outputLine[0]
-            else:
-                status = 0
-                print("Incorrect number of output params, should be exactly 2")
-        else:
-            print("Unsupported output type")
-            status = 0
-
-        return status
-
     def parseConfig(self, configFile):
         """Parse the config file lines.      """
         statusOK = 1
 
-        for configLine in configFile:
-            configLine = configLine.strip()
-            if not statusOK:
-                break
-            if len(configLine) < 1:
-                # Line is empty
-                continue
-            elif configLine[0] is '#':
-                # Line is comment
-                continue
-            elif "input file" in configLine:
-                # Extract input file
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
-                self.inputFile = configLine[0]
-                print("Input file: ")
-                print(self.inputFile)
-            elif "input class" in configLine:
-                # Extract input classes file
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
-                self.inputClasses = configLine[0]
-                #print("Input classes: ")
-                #print(self.inputClasses)
-            elif "output" in configLine:
-                statusOK = self.parseOutputLine(configLine)
-            elif "classif" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split(',')
-                self.classifiersList = configLine
-            elif "training corpus" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
-                self.corpusLM = configLine[0]
-            elif "SRILM" in configLine or "srilm" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip()
-                self.srilmBinPath = configLine
-                if not os.path.isdir(self.srilmBinPath):
-                    statusOK = 0
-                    print("Invalid SRILM binaries path.")
+        from collections import OrderedDict
+
+        # Use custom dict for multi-valued entries
+        class MultiOrderedDict(OrderedDict):
+            def __setitem__(self, key, value):
+                if isinstance(value, list) and key in self:
+                    self[key].extend(value)
                 else:
-                    self.srilmBinPath = os.path.join(self.srilmBinPath, '')
-            elif "kenlm" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip()
-                self.kenlmBinPath = configLine
-                if not os.path.isdir(self.kenlmBinPath):
-                    statusOK = 0
-                    print("Invalid KenLm binaries path.")
-                else:
-                    self.kenlmBinPath = os.path.join(self.kenlmBinPath, '')
-            elif "operating language" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
-                self.language = configLine
-                #print(self.language)
-            elif "persist" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
-                self.persistClassif = configLine[0]
-                if len(configLine) > 1 and "f" in configLine[1]:
-                    self.persistOnFull = True
-                    print("Model will be persisted on full input. ")
-            elif "thread" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
-                if configLine[0].isdigit():
-                    threads = int(configLine[0])
-                    if threads > 0:
-                        #handle single thread case
-                        self.threadsCount = threads if threads < 3 else threads-1
-                    else:
-                        statusOK = 0
-                        print("Number of threads is not a positive integer.")
-                    #print(self.threadsCount)
-                else:
-                    statusOK = 0
-                    print("Number of threads is not a positive integer.")
-            elif "fold" in configLine:
-                startInp = configLine.index(':')
-                configLine = configLine[startInp + 1:]
-                configLine = configLine.strip().split()
-                if configLine[0].isdigit():
-                    folds = int(configLine[0])
-                    if folds > 0:
-                        self.cv_folds = folds
-                        if len(configLine) > 1:
-                            self.cv_Percent = float(configLine[1])
-                            #print("percent{0}".format(self.cv_Percent))
-                    else:
-                        statusOK = 0
-                        print("Number of folds is not a positive integer.")
+                    super(MultiOrderedDict, self).__setitem__(key, value)
+                    # super().__setitem__(key, value) in Python 3
+
+        config = configparser.ConfigParser(dict_type=MultiOrderedDict,
+                                           strict=False, allow_no_value=True)
+        config.optionxform = lambda option: option
+        config.read(configFile)
+
+        # Read the Input values
+        if "Input" in config:
+            self.inputFile = config["Input"].get("input file", "")
+            self.inputClasses = config["Input"].get("input classes", "")
+            self.corpusLM = config["Input"].get("training corpus", "")
+            self.language = config["Input"].get("language", "eng")
+        else:
+            print("Error: Input section missing.")
+            exit()
+
+        # Read any given settings
+        if "Settings" in config:
+            self.threadsCount = config["Settings"].getint("threads", 1)
+            self.kenlmBinPath = config["Settings"].get("kenlm", "")
+            self.srilmBinPath = config["Settings"].get("srilm", "")
+
+            configLine = config["Settings"].get("folds", "1 0")
+            configLine = configLine.strip().split()
+            if configLine[0].isdigit():
+                folds = int(configLine[0])
+                if folds > 0:
+                    self.cv_folds = folds
+                    if len(configLine) > 1:
+                        self.cv_Percent = float(configLine[1])
+                        # print("percent{0}".format(self.cv_Percent))
                 else:
                     statusOK = 0
                     print("Number of folds is not a positive integer.")
             else:
-                params = str(configLine).split(' ', 1)
-                if len(params) == 2 or len(params) == 1:
-                    if params[0].isdigit():
-                        self.featureIDs.append(int(params[0]))
-                        if len(params) == 2:
-                            self.featargs.append(params[1])
-                        else:
-                            self.featargs.append([])
-                    else:
-                        statusOK = 0
-                        print("Feature ID is not a Number")
+                statusOK = 0
+                print("Number of folds is not a positive integer.")
+
+        # Read the output values
+        if "Output" in config:
+            self.classifReport = config["Output"].get("classifier report", "")
+
+            configLine = config["Output"].get("persist models", "")
+            configLine = configLine.strip().split()
+            if configLine:
+                self.persistClassif = configLine[0]
+                if len(configLine) > 1 and "f" in configLine[1]:
+                    self.persistOnFull = True
+                    print("Model will be persisted on full input. ")
+
+            outFeats = config["Output"].get("output features", "")
+            if outFeats:
+                outFeats = outFeats.strip().split()
+                if len(outFeats) == 2:
+                    self.featOutput = outFeats[0]
+                    self.featOutFormat = outFeats[1]
+                elif len(outFeats) == 1:
+                    self.featOutput = outFeats[0]
                 else:
-                    # Incorrect number/value of params
-                    statusOK = 0
-                    print("Incorrect number of params, max 2 parameters.")
+                    print("Incorrect number of output params, should be exactly 2")
+                    exit()
+
+        # Load feature IDs and their args
+        if "Features" in config:
+            for feat in config["Features"]:
+                # Handle repeated feats with different args
+                args = config["Features"].get(feat, "")
+                if args:
+                    args = args.split("\n")
+                    for arg in args:
+                        self.featureIDs.append(int(feat))
+                        #print(arg)
+                        self.featargs.append(arg)
+                else:
+                    self.featureIDs.append(int(feat))
+                    self.featargs.append(args)
+
+        else:
+            print("No features requested.")
+
+        if "Classifiers" in config:
+            for classif in config["Classifiers"]:
+                self.classifiersList.append(classif)
+                self.classifierArgs.append(config["Classifiers"].get(classif, ""))
 
         return statusOK
 

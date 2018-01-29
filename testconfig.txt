@@ -1,48 +1,59 @@
+[Input]
+# params are parsed after ':' or '='
+input file : data/testSent2.txt
+input classes:  data/testSentClasses2.txt
+training corpus: data/30k.literature.orig_tran.low.en
+#input classes: data/testSentRegres2.txt
+language : eng
+
+[Output]
+
+output classifier: report1.txt
+#output features: feats.txt libsvm
+#output features: feats.txt csv
+#persist models: testClass.skl -f
+
+[Settings]
+#srilm : srilm-1.7.2/bin/i686-m64
+#kenlm : kenlm/build/bin
+
+threads : 4
+folds : 1 0.3
+
+[Classifiers]
+
+#RandomForest
+#Decision_tree
+#Ada_boost
+#Ensemble
+#SVC_linear: r 5
+#Random_forest: r 10
+#SVR_linear
+#Logistic_regression
+SVC_linear
+
+[Features]
 1
 # This is a comment
 2
-#classifiers : RandomForest
-training corpus: data/30k.literature.orig_tran.low.en
-#srilm path : /home/gilani/Documents/Github/srilm-1.7.2/bin/i686-m64
-kenlm : /home/gilani/Documents/Github/kenlm/build/bin
-operating language : eng
-threads : 4
-folds : 1 0.3
-#classifiers : Decision_tree, Random_forest, Ada_boost, Ensemble
-#classifiers : SVC_linear r 5, Random_forest r 10
-#classifiers: SVR_linear r 5
-classifiers: SVC_linear
-#classifiers : Logistic_regression
-#persist models: testClass.skl -f
-#3 0,J,N,V,R
-#3 1,J,N,V,R,data/testSent2.txt_tagged_Input.txt
-4 1,1
-4 2,1
-#5 1,10
-#5 1,10,data/testSent2.txt_tagged_Input.txt
-#6 1,10
-#7 1,10
+#3:0,J,N,V,R
+#3:1,J,N,V,R,data/testSent2.txt_tagged_Input.txt
+4:1,1
+4:2,1
+#5:1,10
+#5:1,10,data/testSent2.txt_tagged_Input.txt
+#6:1,10
+#7:1,10
 #10
 #11
-#12 0,CC,DT,WDT,IN,PDT
-#33 100
-#33 model1
+#12:0,CC,DT,WDT,IN,PDT
+#33:100
+#33:model1
 #34
-#17 1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
-#17 0,3
-#18 0,0,0,3
-#19 1,10,4
-#19 2,1,4
-#20 1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
-#21 0,0,0,3
-
-#output classifier: report1.txt
-#output features: feats.txt libsvm
-#output features: feats.txt csv
-
-input file : data/testSent2.txt
-input classes:  data/testSentClasses2.txt
-
-#input classes: data/testSentRegres2.txt
-#input files : literature.fr literature.classes
-# input and classifiers are parsed after ':'
+#17:1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
+#17:0,3
+#18:0,0,0,3
+#19:1,10,4
+#19:2,1,4
+#20:1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
+#21:0,0,0,3
