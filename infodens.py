@@ -1,31 +1,17 @@
 from infodens.controller.controller import Controller
 import sys
+import os
 
 
 def infodensRun(configFiles):
+
     # Init a Controller.
     control = Controller(configFiles)
     # Load the config file
-    status, featIds, classifiersList = control.loadConfig()
-    # MAIN PROCESS (Extract all features)
-    if status != 0:
-        print("Requested features: ")
-        print(featIds)
-        if classifiersList:
-            print("Requested classifiers: ")
-            print(classifiersList)
-        # Manages feature Extraction
-        status = control.manageFeatures()
-        if status != 0:
-            # Manages a classifier
-            control.classifyFeats()
-        else:
-            print("Error in feature Management.")
-            return 0
-
-    else:
-        print("Error in Config file.")
-        return 0
+    control.loadConfig()
+    # MAIN PROCESS (Extract all features then classify)
+    control.manageFeatures()
+    control.classifyFeats()
 
 
 if __name__ == '__main__':
@@ -34,10 +20,22 @@ if __name__ == '__main__':
 
     configs = []
 
+    # Gets the config files' names from the arguments
     if len(sys.argv) > 1:
         configs = sys.argv[1:]
+        for config in configs:
+            if not os.path.isfile(config):
+                # Configuration file doesn't exist
+                print("Configuration file {0} not found. ".format(config))
+                sys.exit()
     else:
-        configs.append("testconfig.txt")
+        fallBackConfig = "testconfig.txt"
+        if os.path.isfile(fallBackConfig):
+            print("Using demo configuration..")
+            configs.append(fallBackConfig)
+        else:
+            print("No configuration file provided. Exiting..")
+            sys.exit()
 
-    print("Config file(s): {0}".format(configs))
+    print("Configuration file(s): {0}".format(configs))
     infodensRun(configs)

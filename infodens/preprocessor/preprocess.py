@@ -68,7 +68,8 @@ class Preprocess:
     def gettokenizeSents(self):
         """Return tokenized sentences."""
         if not self.tokenSents:
-            self.tokenSents = [nltk.word_tokenize(sent) for sent in self.getPlainSentences()]
+            self.tokenSents = [nltk.word_tokenize(sent)
+                               for sent in self.getPlainSentences()]
         return self.tokenSents
 
     def getParseTrees(self):

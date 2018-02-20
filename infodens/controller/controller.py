@@ -4,6 +4,7 @@ from infodens.classifier import classifier_manager
 from infodens.formater import format
 from infodens.controller.configurator import Configurator
 import os.path
+import sys
 
 
 class Controller:
@@ -33,7 +34,7 @@ class Controller:
         self.featDescriptors = []
         self.classesList = []
 
-    def parseMergeConfigs(self):
+    def mergeConfigs(self):
 
         allFeats = []
         for config in self.configurators:
@@ -49,8 +50,8 @@ class Controller:
             if config.persistOnFull:
                 self.persistOnFull = True
 
-            # Only once or last instance
-            # Todo: report conflicts
+            # Policy is any or last appearance
+            # Possible TODO: report conflicts
             if config.inputClasses:
                 self.inputClasses = config.inputClasses
             if config.featOutput:
@@ -67,35 +68,31 @@ class Controller:
                 self.classifiersList.extend(config.classifiersList)
                 self.classifierArgs.extend(config.classifierArgs)
 
-        #self.classifiersList = list(set(self.classifiersList))
-
         return allFeats
 
     def loadConfig(self):
         """Read the config file(s), extract the featureIDs and
         their argument strings.
         """
-        statusOK = 1
-
         # Extract featureID and feature Argument string
         for configFile in self.configFiles:
-            #with open(configFile) as config:
-                # Parse the config file
-            configurator = Configurator()
-            statusOK = configurator.parseConfig(configFile)
+            # Parse the config file
+            configurator = Configurator(configFile)
+            configurator.parseConfig()
             self.configurators.append(configurator)
 
-            if not configurator.inputFile and statusOK:
-                print("Error, Missing input files.")
-                exit()
+        mergedFeats = self.mergeConfigs()
 
-        mergedFeats = self.parseMergeConfigs()
-
+        # No sents classes provided but output or classification requested
         if not self.inputClasses and (self.classifiersList or self.featOutput):
-            print("Error, Missing input files.")
-            exit()
+            print("Error, Missing input classes file.")
+            sys.exit()
 
-        return statusOK, mergedFeats, self.classifiersList
+        print("Requested features: ")
+        print(mergedFeats)
+        if self.classifiersList:
+            print("Requested classifiers: ")
+            print(self.classifiersList)
 
     def classesSentsMismatch(self, inputFile):
         if self.inputClasses:
@@ -116,8 +113,8 @@ class Controller:
 
         for configurator in self.configurators:
             if self.inputClasses and self.classesSentsMismatch(configurator.inputFile):
-                print("Classes and Sentences length differ. Quiting. ")
-                return 0
+                print("Count of Classes and Sentences differ. Exiting.")
+                sys.exit()
 
         extractedFeats = []
         for configurator in self.configurators:
@@ -130,8 +127,9 @@ class Controller:
                 self.featDescriptors.append(descriptors)
             else:
                 # terminate
-                print("Requested Feature ID not available.")
-                return 0
+                print("Requested Feature ID not available. Exiting.")
+                sys.exit()
+
         self.extractedFeats = featman.mergeFeats(extractedFeats)
         self.scaleFeatures()
 
@@ -139,10 +137,7 @@ class Controller:
 
         if returnFeats:
             return self.extractedFeats
-
         self.outputFeatures()
-
-        return 1
 
     def scaleFeatures(self):
         from sklearn import preprocessing as skpreprocess
@@ -163,9 +158,8 @@ class Controller:
     def classifyFeats(self):
         """Instantiate a classifier Manager then run it. """
 
-        print("Starting classification...")
-
         if self.inputClasses and self.classifiersList:
+            print("Starting classification...")
             # Classify if the parameters needed are specified
             classifying = classifier_manager.Classifier_manager(
                           self.classifiersList, self.classifierArgs, self.extractedFeats,
@@ -186,9 +180,7 @@ class Controller:
                 return 0
             else:
                 # terminate
-                print("Requested Classifier not available.")
-                return -1
+                print("Requested Classifier not available. Exiting")
+                sys.exit()
         else:
             print("Classifier parameters not specified.")
-        return 1
-
