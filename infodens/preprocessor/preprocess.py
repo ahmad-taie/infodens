@@ -20,6 +20,7 @@ class Preprocess:
 
         self.inputFile = configurator.inputFile
         self.corpusForLM = configurator.corpusLM
+        self.inputClasses = configurator.inputClasses
         self.operatingLanguage = configurator.language
         self.sentCount = 0
         self.threadsCount = configurator.threadsCount
@@ -51,6 +52,9 @@ class Preprocess:
 
     def getInputFileName(self):
         return self.inputFile
+
+    def getInputClassesFile(self):
+        return self.inputClasses
 
     def getCorpusLMName(self):
         return self.corpusForLM
