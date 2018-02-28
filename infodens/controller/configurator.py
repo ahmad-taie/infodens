@@ -90,13 +90,11 @@ class Configurator:
             outFeats = config["Output"].get("output features", "")
             if outFeats:
                 outFeats = outFeats.strip().split()
-                if len(outFeats) == 2:
+                if len(outFeats) >= 2:
                     self.featOutput = outFeats[0]
-                    self.featOutFormat = outFeats[1]
-                elif len(outFeats) == 1:
-                    self.featOutput = outFeats[0]
+                    self.featOutFormat = outFeats[1:]
                 else:
-                    print("Incorrect number of output params, should be exactly 2")
+                    print("Config Error: Feature output format not specified.")
                     sys.exit()
 
         # Load feature IDs and their args

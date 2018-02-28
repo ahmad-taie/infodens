@@ -14,6 +14,17 @@ class Format_writer:
     def __init__(self):
         self.className = 'format Writer'
 
+        # Add format writer in dictionary below, name : method
+        self.formatwriters = {"libsvm": self.libsvmwriteToFile,
+                              "csv": self.csvtoFile,
+                              "arff": self.arffwriteToFile}
+
+    def writeFormats(self, X, Y, theFile, formats):
+        for form in formats:
+            self.formatwriters[form](X, Y, "{0}.{1}".format(theFile, form))
+
+    # Define a new format writer method here as below
+
     def csvtoFile(self, X, Y, theFile):
         import numpy
         Y = sparse.coo_matrix(Y).transpose()

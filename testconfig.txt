@@ -9,8 +9,7 @@ language : eng
 [Output]
 
 output classifier: report1.txt
-#output features: feats.txt libsvm
-#output features: feats.txt csv
+output features: feats libsvm csv
 #persist models: testClass.skl -f
 
 [Settings]
@@ -29,8 +28,8 @@ folds : 1 0.2
 #Random_forest: r 10
 #SVR_linear
 #Logistic_regression
-#SVC_linear
-MLP_classifier
+SVC_linear
+#MLP_classifier
 
 [Features]
 1

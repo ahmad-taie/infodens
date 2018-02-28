@@ -79,8 +79,8 @@ persist model: testClass.skl -f
 # The classification report output
 output classifier: report1.txt
 
-# feature output file and format (libsvm, csv, and arff supported)
-output features: feats.txt libsvm
+# feature output file name followed by format(s) (libsvm, csv, and arff supported)
+output features: feats_out libsvm csv
 
 [Features]
 # As described above
