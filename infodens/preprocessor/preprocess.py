@@ -4,11 +4,6 @@ Created on Tue Aug 30 15:19:12 2016
 
 @author: admin
 """
-import nltk
-from collections import Counter
-from nltk.stem.wordnet import WordNetLemmatizer
-import subprocess
-from infodens.preprocessor.preprocess_services import Preprocess_Services
 import os
 
 
@@ -16,7 +11,7 @@ class Preprocess:
     
     fileName = ''
     
-    def __init__(self, configurator):
+    def __init__(self, configurator, prep_servs):
 
         self.inputFile = configurator.inputFile
         self.corpusForLM = configurator.corpusLM
@@ -32,11 +27,7 @@ class Preprocess:
         self.mixedSents = []
         self.word2vecModel = {}
         self.langModelFiles = []
-        self.srilmBinaries = configurator.srilmBinPath
-        self.kenlmbins = configurator.kenlmBinPath
-        self.prep_servs = Preprocess_Services(srilmBinaries=configurator.srilmBinPath,
-                                              kenlmBins=configurator.kenlmBinPath,
-                                              lang=configurator.language)
+        self.prep_servs = prep_servs
 
     def getLanguageMode(self):
         """Return the current language mode."""
@@ -59,9 +50,6 @@ class Preprocess:
     def getCorpusLMName(self):
         return self.corpusForLM
 
-    def getBinariesPath(self):
-        return self.srilmBinaries, self.kenlmbins
-
     def getPlainSentences(self):
         """Return sentences as read from file."""
         if not self.plainLof:
@@ -72,7 +60,8 @@ class Preprocess:
     def gettokenizeSents(self):
         """Return tokenized sentences."""
         if not self.tokenSents:
-            self.tokenSents = [nltk.word_tokenize(sent)
+            sentTokenizer = self.prep_servs.getSentTokenizer()
+            self.tokenSents = [sentTokenizer(sent)
                                for sent in self.getPlainSentences()]
         return self.tokenSents
 
@@ -119,7 +108,8 @@ class Preprocess:
 
         if not self.taggedPOSSents:
             print("POS tagging..")
-            tagPOSSents = nltk.pos_tag_sents(self.gettokenizeSents(), lang=self.operatingLanguage)
+            posTagger = self.prep_servs.getPOSTagger()
+            tagPOSSents = posTagger(self.gettokenizeSents(), lang=self.operatingLanguage)
             for i in range(0, len(tagPOSSents)):
                 self.taggedPOSSents.append([wordAndTag[1] for wordAndTag in tagPOSSents[i]])
             print("POS tagging done.")
@@ -130,9 +120,9 @@ class Preprocess:
         """Lemmatize and return sentences."""
         if not self.lemmatizedSents:
             self.gettokenizeSents()
-            lemmatizer = WordNetLemmatizer()
+            lemmatizer = self.prep_servs.getLemmatizer()
             for i in range(0, len(self.tokenSents)):
-                lemmatized = [lemmatizer.lemmatize(a) for a in self.tokenSents[i]]
+                lemmatized = [lemmatizer(a) for a in self.tokenSents[i]]
                 self.lemmatizedSents.append(lemmatized)
 
         return self.lemmatizedSents

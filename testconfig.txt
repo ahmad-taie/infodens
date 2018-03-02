@@ -9,7 +9,7 @@ language : eng
 [Output]
 
 output classifier: report1.txt
-output features: feats libsvm csv
+#output features: feats libsvm csv
 #persist models: testClass.skl -f
 
 [Settings]

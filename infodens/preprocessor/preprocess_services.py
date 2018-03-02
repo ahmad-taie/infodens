@@ -36,9 +36,26 @@ class Preprocess_Services:
         ids = [float(id) for id in lines]
         return ids
 
+    def getSentTokenizer(self):
+        # Tokenize on a sentence level
+        # params(sent) returns [tokens]
+        return nltk.word_tokenize
+
+    def getPOSTagger(self):
+        # Tag on list of tokenize sentences
+        # params([tokens],lang=) returns (word,POStag)
+        return nltk.pos_tag_sents
+
+    def getLemmatizer(self):
+        # Lemmatizes a list of tokens
+        # params ([tokens]) returns [lemmas]
+        lemmatizer = nltk.stem.WordNetLemmatizer()
+        return lemmatizer.lemmatize
+
     def getFileTokens(self, fileOfTokens):
         """Return tokens from file"""
-        return [nltk.word_tokenize(sent) for sent in self.preprocessBySentence(fileOfTokens)]
+        tokenizer = self.getSentTokenizer()
+        return [tokenizer(sent) for sent in self.preprocessBySentence(fileOfTokens)]
 
     def dumpTokensTofile(self, dumpFile, tokenSents):
         """ Dump tokens into file"""
@@ -53,21 +70,12 @@ class Preprocess_Services:
         """ Return POS tagged sentences from given File """
         taggedPOSSents = []
         print("POS tagging..")
-        tagPOSSents = nltk.pos_tag_sents(self.getFileTokens(filePOS),lang=self.operatingLanguage)
+        posTagger = self.getPOSTagger()
+        tagPOSSents = posTagger(self.getFileTokens(filePOS),lang=self.operatingLanguage)
         for i in range(0, len(tagPOSSents)):
             taggedPOSSents.append([wordAndTag[1] for wordAndTag in tagPOSSents[i]])
         print("POS tagging done.")
         return taggedPOSSents
-
-    # def buildNgrams(self, n, freq, tokens, returnCounts=False):
-    #     """Build and return ngrams from given tokens."""
-    #     ngramsList = [list(nltk.ngrams(tokens[i], n)) for i in range(len(tokens))]
-    #     ngramsOutput = [item for sublist in ngramsList for item in sublist]  # flatten the list
-    #     ngramsDict = Counter(ngramsOutput)
-    #     if not returnCounts:
-    #         return self.ngramMinFreq(ngramsDict, freq)
-    #     else:
-    #         return ngramsDict, len(ngramsDict)
 
     def buildNgrams(self, n, freq, tokens, indexing=True):
         """Build and return ngrams from given tokens."""
@@ -123,8 +131,6 @@ class Preprocess_Services:
 
         model = gensim.models.Word2Vec(tokenizedCorpus, size=vecSize, min_count=1, workers=threadsCount)
         print("Word2Vec model done.")
-
-        #model.save("model1")
 
         return model
 

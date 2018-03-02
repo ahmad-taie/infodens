@@ -5,6 +5,7 @@ from joblib import Parallel, delayed
 import itertools
 from scipy import sparse
 from infodens.preprocessor import preprocess
+from infodens.preprocessor.preprocess_services import Preprocess_Services
 import infodens.feature_extractor.feature_extractor as feat_extr
 
 
@@ -42,7 +43,10 @@ class Feature_manager:
     def __init__(self, sentCount, configurator):
         self.featureIDs = configurator.featureIDs
         self.featureArgs = configurator.featargs
-        self.preprocessor = preprocess.Preprocess(configurator)
+        self.prep_servs = Preprocess_Services(srilmBinaries=configurator.srilmBinPath,
+                                              kenlmBins=configurator.kenlmBinPath,
+                                              lang=configurator.language)
+        self.preprocessor = preprocess.Preprocess(configurator, self.prep_servs)
         self.threads = configurator.threadsCount
         self.sentCount = sentCount
 
