@@ -18,7 +18,7 @@ class Format:
         with open(fileName, 'w') as classifOut:
             for i in range(0, len(self.featDescriptions)):
                 classifOut.write("Feature Descriptors for run {0}:"
-                                 " \r\n {1}".format(i, self.featDescriptions[i]))
+                                 " \r\n{1}".format(i, "\r\n".join(self.featDescriptions[i])))
 
     def outFormat(self, fileName, formatType):
         print("Writing features to file.")

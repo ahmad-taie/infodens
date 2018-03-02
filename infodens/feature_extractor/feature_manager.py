@@ -62,7 +62,7 @@ class Feature_manager:
         for tuple in featAndDesc:
             feats.append(tuple[0])
             if tuple[0].get_shape()[1] > 1:
-                self.featDescriptors.append("From {0} to {1} features: {2}".format(
+                self.featDescriptors.append("Features {0} to {1}: {2}".format(
                     featIndex,
                     featIndex+tuple[0].get_shape()[1] - 1,
                     tuple[1]))

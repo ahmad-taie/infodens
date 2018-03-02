@@ -127,8 +127,11 @@ class Bag_of_ngrams_features(Feature_extractor):
         ngramLength = "Ngram feature vector length: " + str(numberOfFeatures)
         print(ngramLength)
 
-        return ngramFeatures, "{0} ngrams with arguments: {1} . Features: {2}".format(
-            ngramType, argString, finNgram)
+        ngramDescrip = "\r\n".join(["{0}: {1}".format(gram[1], gram[0])
+                                    for gram in finNgram.items()])
+
+        return ngramFeatures, "{0} ngrams with arguments: {1}:\r\n{2}".format(
+            ngramType, argString, ngramDescrip)
 
     @featid(4)
     def ngramBagOfWords(self, argString, preprocessReq=0):
