@@ -11,14 +11,15 @@ class Preprocess:
     
     fileName = ''
     
-    def __init__(self, configurator, prep_servs):
+    def __init__(self, inputFile, corpusLM, inputClasses,
+                 language, threadsCount, prep_servs):
 
-        self.inputFile = configurator.inputFile
-        self.corpusForLM = configurator.corpusLM
-        self.inputClasses = configurator.inputClasses
-        self.operatingLanguage = configurator.language
+        self.inputFile = inputFile
+        self.corpusForLM = corpusLM
+        self.inputClasses = inputClasses
+        self.operatingLanguage = language
         self.sentCount = 0
-        self.threadsCount = configurator.threadsCount
+        self.threadsCount = threadsCount
         self.plainLof = []
         self.tokenSents = []
         self.parseTrees = []

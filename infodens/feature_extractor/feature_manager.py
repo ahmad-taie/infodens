@@ -4,13 +4,11 @@ import sys, inspect
 from joblib import Parallel, delayed
 import itertools
 from scipy import sparse
-from infodens.preprocessor import preprocess
-from infodens.preprocessor.preprocess_services import Preprocess_Services
 import infodens.feature_extractor.feature_extractor as feat_extr
 
 
-def runFeatureMethod(mtdCls, featureID,
-                     preprocessor,featureName, featureArgs, preprocessReq=0):
+def runFeatureMethod(mtdCls, featureID, preprocessor, featureName,
+                     featureArgs, preprocessReq=0):
     """ Run the given feature extractor. """
     instance = mtdCls(preprocessor)
     methd = getattr(instance, featureName)
@@ -40,16 +38,13 @@ class Feature_manager:
     And call the necessary feature extractors.
     """
 
-    def __init__(self, sentCount, configurator):
-        self.featureIDs = configurator.featureIDs
-        self.featureArgs = configurator.featargs
-        self.prep_servs = Preprocess_Services(srilmBinaries=configurator.srilmBinPath,
-                                              kenlmBins=configurator.kenlmBinPath,
-                                              lang=configurator.language)
-        self.preprocessor = preprocess.Preprocess(configurator, self.prep_servs)
-        self.threads = configurator.threadsCount
-        self.sentCount = sentCount
-
+    def __init__(self, featureIDs, featargs, threadsCount, trainPrep, testPrep):
+        self.featureIDs = featureIDs
+        self.featureArgs = featargs
+        self.preprocessor = trainPrep
+        # Preprocessor for the test sentences
+        self.testPreprocessor = testPrep
+        self.threads = threadsCount
         self.featDescriptors = []
 
         sys.path.append(os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
@@ -134,14 +129,6 @@ class Feature_manager:
 
         return idClassmethod, allFeatureIds
 
-    def getfeatVectorLen(self, featuresExtracted):
-
-        featsCount = 0
-        for i in range(len(self.featureIDs)):
-           featsCount += featuresExtracted[i].get_shape()[1]
-
-        return featsCount
-
     def callExtractors(self):
         '''Extract all feature Ids and names.  '''
 
@@ -171,7 +158,8 @@ class Feature_manager:
         output = sparse.hstack(features, "lil")
 
         featCount = output.get_shape()[1]
-        featVec = "Feature vector dimensions: " + str(self.sentCount) + "x" + str(featCount)
+        sentCount = output.get_shape()[0]
+        featVec = "Feature vector dimensions: {0}x{1}".format(sentCount, featCount)
         print(featVec)
 
         return output, self.featDescriptors

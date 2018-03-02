@@ -1,4 +1,5 @@
 from infodens.feature_extractor import feature_manager as featman
+from infodens.preprocessor import preprocess
 from infodens.preprocessor.preprocess_services import Preprocess_Services
 from infodens.classifier import classifier_manager
 from infodens.formater import format
@@ -118,7 +119,23 @@ class Controller:
 
         extractedFeats = []
         for configurator in self.configurators:
-            manageFeatures = featman.Feature_manager(self.numSentences, configurator)
+
+            prep_servs = Preprocess_Services(srilmBinaries=configurator.srilmBinPath,
+                                                  kenlmBins=configurator.kenlmBinPath,
+                                                  lang=configurator.language)
+
+            trainPreprocessor = preprocess.Preprocess(configurator.inputFile, configurator.corpusLM,
+                                                      configurator.inputClasses, configurator.language,
+                                                      configurator.threadsCount, prep_servs)
+            # Preprocessor for the test sentences
+            testPreprocessor = preprocess.Preprocess(configurator.inputFile, configurator.corpusLM,
+                                                          configurator.inputClasses, configurator.language,
+                                                          configurator.threadsCount, prep_servs)
+
+            manageFeatures = featman.Feature_manager(configurator.featureIDs,
+                                                     configurator.featargs,
+                                                     configurator.threadsCount,
+                                                     trainPreprocessor, testPreprocessor)
             validFeats = manageFeatures.checkFeatValidity()
             if validFeats:
                 # Continue to call features
