@@ -13,21 +13,22 @@ from infodens.classifier.classifier import Classifier
 
 class Classifier_manager:
 
-    def __init__(self, classifs, classifArgs, dSet, labs, threads=1, cv_folds=1, cv_Percent = 0,
-                 persistFile="", persistOnFull=False):
+    def __init__(self, classifs, classifArgs, trainSet, trainLabels,
+                 testSet, testLabels, persistFile, threads=1):
+
         self.classifierArgs = classifArgs
         self.classifierIDs = classifs
         self.classifRank = []
         self.classifRankN = []
+        self.trainSet = trainSet
+        self.trainLabels = trainLabels
+        self.testSet = testSet
+        self.testLabels = testLabels
         self.persistFile = persistFile
-        self.persistOnFull = persistOnFull
-        self.dataSet = dSet
-        self.labels = labs
         sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
         self.fileName, self.pathname, self.description = imp.find_module('classifier')
         self.classifyModules = []
-        self.cv_folds = cv_folds
-        self.cv_Percent = cv_Percent
+
         self.threadsCount = threads
         self.availClassifiers = self.returnClassifiers()
 
@@ -64,21 +65,6 @@ class Classifier_manager:
                 self.classifRankN.append(-1)
         return 1
 
-    def runClassifier(self, classifierToRun):
-        classifReport = str(type(classifierToRun).__name__)
-        classifReport += ":\n"
-        classifReport += classifierToRun.runClassifier()
-        classifReport += "\n"
-
-        # Given file name to persist, persist classifier to file
-        if self.persistFile:
-            if self.persistOnFull:
-                print("Training on full data to persist model..")
-                classifierToRun.runClassifier(trainOnFull=True)
-            classifierToRun.persist(self.persistFile)
-
-        return classifReport
-
     def returnClassifiers(self):
         files = (os.listdir("infodens/classifier"))
         for file in files:
@@ -89,6 +75,18 @@ class Classifier_manager:
                 self.classifyModules.append(file)
         return [cls.__name__ for cls in Classifier.__subclasses__()]
 
+    def runClassifier(self, classifierToRun):
+        classifReport = str(type(classifierToRun).__name__)
+        classifReport += ":\n"
+        classifReport += classifierToRun.runClassifier()
+        classifReport += "\n"
+
+        # Given file name to persist, persist classifier to file
+        if self.persistFile:
+            classifierToRun.persist(self.persistFile)
+
+        return classifReport
+
     def callClassifiers(self):
 
         classifierObjs = []
@@ -98,8 +96,8 @@ class Classifier_manager:
                     break
             classModule = importlib.import_module("infodens.classifier."+module)
             class_ = getattr(classModule, classif)
-            classifierObjs.append(class_(self.dataSet, self.labels, self.threadsCount,
-                                         self.cv_folds, self.cv_Percent))
+            classifierObjs.append(class_(self.trainSet, self.trainLabels, self.testSet,
+                                         self.testLabels, self.threadsCount))
 
         classifReports = []
 

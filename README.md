@@ -134,7 +134,7 @@ We welcome (and encourage) any feedback and inquiries.
 Feature Name | ID | Description | Argument string
 --- | --- | --- | ---  
 Average word length | 1 | Calculates the average word length per sentence | None
-Syllable ratio | 2 | Counting the number of vowel-sequences that are delimited by consonants or space in a word, normalized by the number of tokens in the sentence | None 
+Syllable ratio | 2 | Counting the number of vowel-sequences that are delimited by consonants or space in a word, normalized by the number of tokens in the sentence | Example: a,e,i,o,u  <li> List of vowels (comma separated). Default: lowercase English vowels </li>
 Sentence length | 10 | Calculates the length of each sentence in words | None
 Lexical density | 3 | The frequency of tokens that are not nouns, adjectives, adverbs or verbs. Computed by dividing the number of tokens not tagged with the given POS tags by the number of tokens in the sentence |  Example: 1,NN, c:\tagged.txt <li> Flag (0/1) indicating given POS tagged input. </li> <li> List of POS tags (comma separated) </li> <li> POS tagged file path (when flag is 1) </li>
 Lexical richness (type-token ratio) | 11 | The ratio of unique tokens in the sentence over the sentence length | None 

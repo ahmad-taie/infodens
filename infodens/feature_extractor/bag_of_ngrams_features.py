@@ -9,110 +9,61 @@ from .feature_extractor import featid, Feature_extractor
 from collections import Counter
 from nltk import ngrams
 from scipy import sparse
+import argparse
+import sys
 
 
 class Bag_of_ngrams_features(Feature_extractor):
 
-    def ngramArgumentCheck(self, argString, typeNgram):
-        status = 1
-        n = 0
-        freq = 0
-        trainTokens = ""
-        taggedInput = ""
+    def ngramArgumentCheck(self, args, ngramType):
 
-        argStringList = argString.split(',')
-        if argStringList[0].isdigit():
-            n = int(argStringList[0])
-        else:
-            print('Error: n should be an integer')
-            status = 0
-        if len(argStringList) > 1:
-            if argStringList[1].isdigit():
-                freq = int(argStringList[1])
-            else:
-                print('Error: cut-off frequency should be an integer')
-                status = 0
+        pos_train = ""
+        pos_test = ""
+        parser = argparse.ArgumentParser(description='Bag of ngrams args')
+        parser.add_argument("-train", help="Path for file to build ngram vector from.",
+                            type=str, default="")
+        if ngramType == "POS":
+            parser.add_argument("-pos_train", help="Path for POS tagged train sentences.",
+                                type=str, default="")
+            parser.add_argument("-pos_test", help="Path for POS tagged test sentences.",
+                                type=str, default="")
+        parser.add_argument("-ngram", help="Order of ngram.",
+                            type=int, default=3)
+        parser.add_argument("-cutoff", help="Min. Cutoff for ngram.",
+                            type=int, default=1)
 
-            # Train file and taggedFile
-            if len(argStringList) > 2:
-                if typeNgram is "plain":
-                    trainTokens = argStringList[2]
-                else:
-                    taggedInput = argStringList[2]
-                    if len(argStringList) > 3:
-                        trainTokens = argStringList[3]
-        else:
-            freq = 1
+        argsOut = parser.parse_args(args.split())
+        if ngramType == "POS":
+            pos_train = argsOut.pos_train
+            pos_test = argsOut.pos_test
 
-        return status, n, freq, trainTokens, taggedInput
+        return argsOut.ngram, argsOut.cutoff, argsOut.train, pos_train, pos_test
 
-    def preprocessReqHandle(self, typeNgram):
+    def preprocessReqHandle(self, typeNgram, taggedInp, taggedTest):
         if typeNgram is "plain":
             self.preprocessor.gettokenizeSents()
+            self.testPreprocessor.gettokenizeSents()
         elif typeNgram is "POS":
-            self.preprocessor.getPOStagged()
+            if not taggedInp:
+                self.preprocessor.getPOStagged()
+            if not taggedTest:
+                self.testPreprocessor.getPOStagged()
         elif typeNgram is "lemma":
             self.preprocessor.getLemmatizedSents()
+            self.testPreprocessor.getLemmatizedSents()
         elif typeNgram is "mixed":
             self.preprocessor.getMixedSents()
+            self.testPreprocessor.getMixedSents()
         else:
             #Assume plain
             self.preprocessor.gettokenizeSents()
+            self.testPreprocessor.gettokenizeSents()
 
         return 1
 
-    def ngramExtraction(self, ngramType, argString, preprocessReq):
-        status, n, freq, trainTokens, taggedInp = self.ngramArgumentCheck(argString, ngramType)
-        if not status:
-            # Error in argument.
-            return
-
-        # Handle preprocessing requests and exit
-        if preprocessReq:
-            if trainTokens or taggedInp:
-                # Will handle in-function no prep required
-                return 1
-            else:
-                return self.preprocessReqHandle(ngramType)
-
-        # Sentences to get ngrams for
-        listOfSentences = []
-
-        if taggedInp:
-            listOfSentences = self.preprocessor.prep_servs.getFileTokens(taggedInp)
-        else:
-            if ngramType is "plain":
-                listOfSentences = self.preprocessor.gettokenizeSents()
-            elif ngramType is "POS":
-                listOfSentences = self.preprocessor.getPOStagged()
-            elif ngramType is "lemma":
-                listOfSentences = self.preprocessor.getLemmatizedSents()
-            elif ngramType is "mixed":
-                listOfSentences = self.preprocessor.getMixedSents()
-            else:
-                #Assume plain
-                listOfSentences = self.preprocessor.gettokenizeSents()
-
-        if not trainTokens:
-            trainSentences = listOfSentences
-        else:
-            # Given file with tokens, extract tokens
-            trainSentences = self.preprocessor.prep_servs.getFileTokens(trainTokens)
-
-
-        finNgram, numberOfFeatures = self.preprocessor.\
-                                    prep_servs.buildNgrams(n, freq, trainSentences)
-
-        print("Ngrams built.")
-
-        if numberOfFeatures == 0:
-            print("Cut-off too high, no ngrams passed it.")
-            return []
+    def extractNgram(self, listOfSentences, n, numberOfFeatures, finNgram):
 
         ngramFeatures = sparse.lil_matrix((len(listOfSentences), numberOfFeatures))
-
-        print("Extracting ngram feats.")
-
         for i in range(len(listOfSentences)):
             ngramsVocab = Counter(ngrams(listOfSentences[i], n))
             lenSent = len(ngramsVocab)
@@ -123,6 +74,52 @@ class Bag_of_ngrams_features(Feature_extractor):
                 if ngramIndex >= 0:
                     ngramFeatures[i, ngramIndex] = round((float(ngramsVocab[ngramEntry]) / lenSent), 2)
 
+        return ngramFeatures
+
+    def ngramExtraction(self, ngramType, argString, preprocessReq):
+        n, freq, trainTokens, taggedInp, taggedTest = self.ngramArgumentCheck(argString, ngramType)
+
+        # Handle preprocessing requests and exit
+        if preprocessReq:
+            return self.preprocessReqHandle(ngramType, taggedInp, taggedTest)
+
+        # Sentences to get ngrams for
+        if ngramType is "plain":
+            listOfSentences = self.preprocessor.gettokenizeSents()
+            testListOfSentences = self.testPreprocessor.gettokenizeSents()
+        elif ngramType is "POS":
+            listOfSentences = self.preprocessor.getPOStagged(taggedInp)
+            testListOfSentences = self.testPreprocessor.getPOStagged(taggedInp)
+        elif ngramType is "lemma":
+            listOfSentences = self.preprocessor.getLemmatizedSents()
+            testListOfSentences = self.testPreprocessor.getLemmatizedSents()
+        elif ngramType is "mixed":
+            listOfSentences = self.preprocessor.getMixedSents()
+            testListOfSentences = self.testPreprocessor.getMixedSents()
+        else:
+            #Assume plain
+            listOfSentences = self.preprocessor.gettokenizeSents()
+            testListOfSentences = self.testPreprocessor.gettokenizeSents()
+
+        if not trainTokens:
+            trainSentences = listOfSentences
+        else:
+            # Given file with tokens, extract tokens
+            trainSentences = self.preprocessor.prep_servs.getFileTokens(trainTokens)
+
+        finNgram, numberOfFeatures = self.preprocessor.\
+                                    prep_servs.buildNgrams(n, freq, trainSentences)
+
+        print("Ngrams built.")
+
+        if numberOfFeatures == 0:
+            print("Cut-off too high, no ngrams passed it.")
+            sys.exit()
+
+        print("Extracting ngram feats.")
+        trainFeatures = self.extractNgram(listOfSentences, n, numberOfFeatures, finNgram)
+        testFeatures = self.extractNgram(testListOfSentences, n, numberOfFeatures, finNgram)
+
         print("Finished ngram features.")
         ngramLength = "Ngram feature vector length: " + str(numberOfFeatures)
         print(ngramLength)
@@ -130,7 +127,7 @@ class Bag_of_ngrams_features(Feature_extractor):
         ngramDescrip = "\r\n".join(["{0}: {1}".format(gram[1], gram[0])
                                     for gram in finNgram.items()])
 
-        return ngramFeatures, "{0} ngrams with arguments: {1}:\r\n{2}".format(
+        return trainFeatures, testFeatures, "{0} ngrams with arguments: {1}:\r\n{2}".format(
             ngramType, argString, ngramDescrip)
 
     @featid(4)

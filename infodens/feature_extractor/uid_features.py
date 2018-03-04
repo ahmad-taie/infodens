@@ -14,21 +14,15 @@ import codecs
 
 class UID_features(Feature_extractor):
 
-    def extractValues(self, srilmOutput, sentCount):
-        feats = []
-        with codecs.open(srilmOutput, encoding='utf-8') as sents:
-            for line in sents:
-                if "logprob=" in line:
-                    line = str(line).strip().split(" ")
-                    if len(feats) < sentCount:
-                        tmp = []
-                        for i in [3, 5, 7]:
-                            if line[i] != "undefined":
-                                tmp.append(np.float32(line[i]))
-                            else:
-                                tmp.append(np.float32(0.0))
-                        feats.append(tmp)
-        return feats
+    def extractValues(self, trainSents, model):
+        vars = []
+        for toks in trainSents:
+            scores = []
+            for i in range(1, len(toks) + 1):
+                scores.append(-model.score(" ".join(toks[:i]), eos=False))
+            scores.append(-model.score(" ".join(toks), eos=True))
+            vars.append(np.var(scores))
+        return sparse.lil_matrix(vars).transpose()
 
     @featid(77)
     def uid_variance(self, argString, preprocessReq=0):
@@ -49,13 +43,10 @@ class UID_features(Feature_extractor):
         if preprocessReq:
             # Request all preprocessing functions to be prepared
             if not langModel:
-                langModel = self.preprocessor.buildLanguageModel(ngramOrder)
-            self.preprocessor.getInputFileName()
-            self.preprocessor.getBinariesPath()
+                self.preprocessor.buildLanguageModel(ngramOrder)
+                self.preprocessor.gettokenizeSents()
+                self.testPreprocessor.gettokenizeSents()
             return 1
-
-        sentsFile = self.preprocessor.getInputFileName()
-        srilmBinary, kenlm = self.preprocessor.getBinariesPath()
 
         if not langModel:
             langModel = self.preprocessor.buildLanguageModel(ngramOrder)
@@ -63,14 +54,8 @@ class UID_features(Feature_extractor):
         __import__('imp').find_module('kenlm')
         import kenlm
         model = kenlm.Model(langModel)
-        vars = []
-        for toks in self.preprocessor.gettokenizeSents():
-            scores = []
-            for i in range(1, len(toks) + 1):
-                scores.append(-model.score(" ".join(toks[:i]), eos=False))
-            scores.append(-model.score(" ".join(toks), eos=True))
-            vars.append(np.var(scores))
+        trainUID = self.extractValues(self.preprocessor.gettokenizeSents(), model)
+        testUID = self.extractValues(self.testPreprocessor.gettokenizeSents(), model)
 
-        output = sparse.lil_matrix(vars).transpose()
-        return output, "UID surprisal variance."
+        return trainUID, testUID, "UID surprisal variance."
 

@@ -4,9 +4,6 @@ Created on Sun Sep 04 14:42:43 2016
 
 @author: admin
 """
-import inspect
-from infodens.preprocessor.preprocess_services import Preprocess_Services
-
 
 def featid(func_id):
     def decorator(f):
@@ -17,9 +14,9 @@ def featid(func_id):
 
 class Feature_extractor(object):
 
-    def __init__(self, preprocessed):
+    def __init__(self, preprocessed, testPrep=None):
         '''
         Initializes the class with a preprocessor. '''
         self.preprocessor = preprocessed
-        self.prep_servs = Preprocess_Services()
+        self.testPreprocessor = testPrep
 

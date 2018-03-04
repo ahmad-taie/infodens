@@ -18,22 +18,25 @@ class Controller:
 
         # classification parameters are fixed across Multilingual runs
         self.inputClasses = ""
+        self.testClasses = ""
         self.cv_folds = 1
         self.cv_Percent = 0
         self.classifiersList = []
         self.classifierArgs = []
         self.persistModelFile = ""
-        self.persistOnFull = False
         self.threadsCount = 1
         self.featOutput = ""
         self.featOutFormat = ""
         self.classifReport = ""
 
         # array format of dataset and labels for classifying
-        self.numSentences = 0
-        self.extractedFeats = []
+        self.trainSentsCount = 0
+        self.testSentsCount = 0
+        self.trainFeats = []
+        self.testFeats = []
         self.featDescriptors = []
-        self.classesList = []
+        self.trainClassesList = []
+        self.testClassesList = []
 
     def mergeConfigs(self):
 
@@ -55,6 +58,8 @@ class Controller:
             # Possible TODO: report conflicts
             if config.inputClasses:
                 self.inputClasses = config.inputClasses
+            if config.testClasses:
+                self.testClasses = config.testClasses
             if config.featOutput:
                 self.featOutput = config.featOutput
             if config.featOutFormat:
@@ -95,29 +100,34 @@ class Controller:
             print("Requested classifiers: ")
             print(self.classifiersList)
 
-    def classesSentsMismatch(self, inputFile):
-        if self.inputClasses:
-            # Extract the classed IDs from the given classes file and Check for
-            # Length equality with the sentences.
-            prep_serv = Preprocess_Services()
-            if not self.classesList:
-                self.classesList = prep_serv.preprocessClassID(self.inputClasses)
-            sentLen = len(prep_serv.preprocessBySentence(inputFile))
-            classesLen = len(self.classesList)
-            self.numSentences = sentLen
-            if sentLen != classesLen:
-                return True
-        return False
+    def loadClasses(self, inputFile, testFile):
+        prep_serv = Preprocess_Services()
+        self.trainClassesList = prep_serv.preprocessClassID(self.inputClasses)
+        if self.testClasses:
+            # If no test classes, then predict mode
+            self.testClassesList = prep_serv.preprocessClassID(self.testClasses)
+            self.testSentsCount = len(prep_serv.preprocessBySentence(testFile))
+
+        self.trainSentsCount = len(prep_serv.preprocessBySentence(inputFile))
+
+    def classesSentsMismatch(self):
+        if (self.trainSentsCount != len(self.trainClassesList)) or\
+                (self.testSentsCount != len(self.testClassesList)):
+            return True
+        else:
+            return False
 
     def manageFeatures(self, returnFeats=False):
         """Init and call a feature manager. """
 
         for configurator in self.configurators:
-            if self.inputClasses and self.classesSentsMismatch(configurator.inputFile):
+            self.loadClasses(configurator.inputFile, configurator.testSentsFile)
+            if self.classesSentsMismatch():
                 print("Count of Classes and Sentences differ. Exiting.")
                 sys.exit()
 
-        extractedFeats = []
+        extractedTrainFeats = []
+        extractedTestFeats = []
         for configurator in self.configurators:
 
             prep_servs = Preprocess_Services(srilmBinaries=configurator.srilmBinPath,
@@ -128,8 +138,8 @@ class Controller:
                                                       configurator.inputClasses, configurator.language,
                                                       configurator.threadsCount, prep_servs)
             # Preprocessor for the test sentences
-            testPreprocessor = preprocess.Preprocess(configurator.inputFile, configurator.corpusLM,
-                                                          configurator.inputClasses, configurator.language,
+            testPreprocessor = preprocess.Preprocess(configurator.testSentsFile, configurator.corpusLM,
+                                                          configurator.testClasses, configurator.language,
                                                           configurator.threadsCount, prep_servs)
 
             manageFeatures = featman.Feature_manager(configurator.featureIDs,
@@ -139,49 +149,60 @@ class Controller:
             validFeats = manageFeatures.checkFeatValidity()
             if validFeats:
                 # Continue to call features
-                feats, descriptors = manageFeatures.callExtractors()
-                extractedFeats.append(feats)
+                trainFeats, testFeats, descriptors = manageFeatures.callExtractors()
+                extractedTrainFeats.append(trainFeats)
+                extractedTestFeats.append(testFeats)
                 self.featDescriptors.append(descriptors)
             else:
                 # terminate
                 print("Requested Feature ID not available. Exiting.")
                 sys.exit()
 
-        self.extractedFeats = featman.mergeFeats(extractedFeats)
+        self.trainFeats, trainDims = featman.mergeFeats(extractedTrainFeats)
+        self.testFeats, testDims = featman.mergeFeats(extractedTestFeats)
+        print("Final train feature matrix dimensions: {0}\r\n"
+              "Final test feature matrix dimensions: {1}".format(trainDims, testDims))
         self.scaleFeatures()
 
         print("Feature Extraction Done. ")
 
         if returnFeats:
-            return self.extractedFeats
+            # TODO: Done for the infopredict, will be removed
+            return self.trainFeats
         self.outputFeatures()
 
     def scaleFeatures(self):
         from sklearn import preprocessing as skpreprocess
         scaler = skpreprocess.MaxAbsScaler(copy=False)
-        self.extractedFeats = scaler.fit_transform(self.extractedFeats)
+        self.trainFeats = scaler.fit_transform(self.trainFeats)
+        self.testFeats = scaler.fit_transform(self.testFeats)
 
     def outputFeatures(self):
         """Output features if requested."""
 
         if self.featOutput:
-            formatter = format.Format(self.extractedFeats, self.classesList,
+            formatter = format.Format(self.trainFeats, self.trainClassesList,
                                       self.featDescriptors)
             # if format is not set in config, will use a default libsvm output.
-            formatter.outFormat(self.featOutput, self.featOutFormat)
+            formatter.outFormat("testFeats_{0}".format(self.featOutput), self.featOutFormat)
+
+            # Output test Feats
+            formatter = format.Format(self.testFeats, self.testClassesList,
+                                      self.featDescriptors)
+            formatter.outFormat("testFeats_{0}".format(self.featOutput), self.featOutFormat)
         else:
             print("Feature output was not specified.")
 
     def classifyFeats(self):
         """Instantiate a classifier Manager then run it. """
 
-        if self.inputClasses and self.classifiersList:
+        if self.testClasses and self.classifiersList:
             print("Starting classification...")
             # Classify if the parameters needed are specified
             classifying = classifier_manager.Classifier_manager(
-                          self.classifiersList, self.classifierArgs, self.extractedFeats,
-                          self.classesList, self.threadsCount, self.cv_folds, self.cv_Percent,
-                          self.persistModelFile, self.persistOnFull)
+                          self.classifiersList, self.classifierArgs, self.trainFeats,
+                          self.trainClassesList, self.testFeats, self.testClassesList,
+                          self.persistModelFile, self.threadsCount)
 
             validClassifiers = classifying.checkParseClassifier()
 

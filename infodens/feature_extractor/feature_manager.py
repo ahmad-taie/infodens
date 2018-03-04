@@ -4,17 +4,16 @@ import sys, inspect
 from joblib import Parallel, delayed
 import itertools
 from scipy import sparse
-import infodens.feature_extractor.feature_extractor as feat_extr
 
 
-def runFeatureMethod(mtdCls, featureID, preprocessor, featureName,
-                     featureArgs, preprocessReq=0):
+def runFeatureMethod(mtdCls, featureID, preprocessor, testPreprocessor,
+                     featureName, featureArgs, preprocessReq=0):
     """ Run the given feature extractor. """
-    instance = mtdCls(preprocessor)
+    instance = mtdCls(preprocessor, testPreprocessor)
     methd = getattr(instance, featureName)
     feat = methd(featureArgs, preprocessReq)
-    feateX = "Extracted feature: {0} - {1}".format(featureID, featureName)
     if not preprocessReq:
+        feateX = "Extracted feature: {0} - {1}".format(featureID, featureName)
         print(feateX)
         # Not a tuple then add a feature descriptor
         if not isinstance(feat, tuple):
@@ -27,10 +26,7 @@ def mergeFeats(featMatrices):
 
     output = sparse.hstack(featMatrices, "lil")
 
-    featVec = "Final feature vector dimensions: {0}".format(output.get_shape())
-    print(featVec)
-
-    return output
+    return output, output.get_shape()
 
 
 class Feature_manager:
@@ -48,6 +44,7 @@ class Feature_manager:
         self.featDescriptors = []
 
         sys.path.append(os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
+        import infodens.feature_extractor.feature_extractor as feat_extr
         self.pathname = os.path.dirname(os.path.abspath(feat_extr.__file__))
 
         # Make class variable
@@ -55,23 +52,26 @@ class Feature_manager:
 
     def separateFeatAndDescrip(self, featAndDesc):
 
-        feats = []
+        trainFeats = []
+        testFeats = []
         featIndex = 0
 
         for tuple in featAndDesc:
-            feats.append(tuple[0])
+            trainFeats.append(tuple[0])
+            testFeats.append(tuple[1])
+
             if tuple[0].get_shape()[1] > 1:
                 self.featDescriptors.append("Features {0} to {1}: {2}".format(
                     featIndex,
                     featIndex+tuple[0].get_shape()[1] - 1,
-                    tuple[1]))
+                    tuple[2]))
             else:
                 self.featDescriptors.append("Feature {0}: {1}".format(
-                    featIndex, tuple[1]))
+                    featIndex, tuple[2]))
             featIndex = featIndex + tuple[0].get_shape()[1]
 
         #print(self.featDescriptors)
-        return feats
+        return trainFeats, testFeats
 
     def checkFeatValidity(self):
         ''' Check if requested feature exists. '''
@@ -136,6 +136,7 @@ class Feature_manager:
         for i in range(len(self.featureIDs)):
             runFeatureMethod(self.idClassmethod[self.featureIDs[i]],
                              self.featureIDs[i], self.preprocessor,
+                             self.testPreprocessor,
                              self.allFeatureIds[self.featureIDs[i]],
                              self.featureArgs[i], preprocessReq=1)
 
@@ -146,20 +147,22 @@ class Feature_manager:
                                                         self.idClassmethod[self.featureIDs[i]],
                                                         self.featureIDs[i],
                                                         self.preprocessor,
+                                                        self.testPreprocessor,
                                                         self.allFeatureIds[self.featureIDs[i]],
                                                         self.featureArgs[i])
                                                        for i in range(len(self.featureIDs)))
 
         print("All features extracted. ")
 
-        features = self.separateFeatAndDescrip(featuresExtracted)
+        trainFeatures, testFeatures = self.separateFeatAndDescrip(featuresExtracted)
 
         #Format into scikit format (Each row is a sen)
-        output = sparse.hstack(features, "lil")
+        trainFeatures = sparse.hstack(trainFeatures, "lil")
+        testFeatures = sparse.hstack(testFeatures, "lil")
 
-        featCount = output.get_shape()[1]
-        sentCount = output.get_shape()[0]
+        featCount = trainFeatures.get_shape()[1]
+        sentCount = trainFeatures.get_shape()[0]
         featVec = "Feature vector dimensions: {0}x{1}".format(sentCount, featCount)
         print(featVec)
 
-        return output, self.featDescriptors
+        return trainFeatures, testFeatures, self.featDescriptors

@@ -120,17 +120,20 @@ class Preprocess:
     def getLemmatizedSents(self):
         """Lemmatize and return sentences."""
         if not self.lemmatizedSents:
+            print("Lemmatizing..")
             self.gettokenizeSents()
             lemmatizer = self.prep_servs.getLemmatizer()
             for i in range(0, len(self.tokenSents)):
                 lemmatized = [lemmatizer(a) for a in self.tokenSents[i]]
                 self.lemmatizedSents.append(lemmatized)
+            print("Lemmatization done.")
 
         return self.lemmatizedSents
         
     def getMixedSents(self):
         """Build and return mixed sentences (POS for J,N,V, or R)"""
         if not self.mixedSents:
+            print("Getting mixed sentences..")
             self.getPOStagged()
             for i in range(len(self.tokenSents)):
                 sent = []

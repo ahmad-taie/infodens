@@ -19,6 +19,9 @@ class Preprocess_Services:
         self.kenlmBins = kenlmBins
         self.operatingLanguage = lang
 
+    def getBinariesPath(self):
+        return self.srilmBinaries, self.kenlmBins
+
     def preprocessBySentence(self, inputFile):
         """Load the input file which was specified at Init of object."""
         lines = []

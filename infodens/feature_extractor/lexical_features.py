@@ -6,38 +6,44 @@ Created on Thu Sep 15 11:16:36 2016
 """
 from infodens.feature_extractor.feature_extractor import featid, Feature_extractor
 from scipy import sparse
+import argparse
 
 
 class Lexical_features(Feature_extractor):
     
     def computeDensity(self, taggedSentences, jnrv):
 
-        densities = sparse.lil_matrix((len(taggedSentences), 1))
-        i = 0
+        densities = []
         for sent in taggedSentences:
-            if(len(sent) is 0):
-                densities[i] = 0
+            if len(sent) is 0:
+                densities.append(0)
             else:
                 jnrvList = [tagPOS for tagPOS in sent if tagPOS in jnrv]
-                densities[i] = (float(len(sent) - len(jnrvList)) / len(sent))
-            i += 1
+                densities.append(float(len(sent) - len(jnrvList)) / len(sent))
 
-        return densities
+        return sparse.lil_matrix(densities).transpose()
+
+    def parsePOSArgs(self, args):
+
+        parser = argparse.ArgumentParser(description='Lexical density args')
+        parser.add_argument("-pos_train", help="Path for POS tagged train sentences.",
+                            type=str, default="")
+        parser.add_argument("-pos_test", help="Path for POS tagged test sentences.",
+                            type=str, default="")
+        parser.add_argument("-pos_tags", help="Comma separated list of POS tags.",
+                            type=str, default="")
+
+        argsOut = parser.parse_args(args.split())
+        return argsOut.pos_train, argsOut.pos_test, argsOut.pos_tags.split(",")
 
     @featid(3)        
     def lexicalDensity(self, argString, preprocessReq=0):
-        arguments = argString.split(',')
-        filePOS = 0
-        if(int(arguments[0])):
-            # Use file of tagged sents (last argument)
-            filePOS = arguments[-1]
-            jnrv = arguments[1:-1]
-        else:
-            jnrv = arguments[1:]
+        trainPOS, testPOS, jnrv = self.parsePOSArgs(argString)
 
         if preprocessReq:
             # Request all preprocessing functions to be prepared
-            self.preprocessor.getPOStagged(filePOS)
+            self.preprocessor.getPOStagged(trainPOS)
+            self.testPreprocessor.getPOStagged(testPOS)
             return 1
 
         '''
@@ -45,9 +51,19 @@ class Lexical_features(Feature_extractor):
         This is computed by dividing the number of tokens tagged with POS tags 
         that do not start with J, N, R or V by the number of tokens in the chunk
         '''
-        taggedSents = self.preprocessor.getPOStagged(filePOS)
+        trainLexDens = self.computeDensity(self.preprocessor.getPOStagged(trainPOS), jnrv)
+        testLexDens = self.computeDensity(self.testPreprocessor.getPOStagged(testPOS), jnrv)
 
-        return self.computeDensity(taggedSents, jnrv)
+        return trainLexDens, testLexDens, "Lexical density"
+
+    def getLexicalRichness(self, sents):
+        sentRichness = []
+        for sentence in sents:
+            if len(sentence) is 0:
+                sentRichness.append(0)
+            else:
+                sentRichness.append(float(len(set(sentence)))/len(sentence))
+        return sparse.lil_matrix(sentRichness).transpose()
 
     @featid(11)
     def lexicalRichness(self, argString, preprocessReq=0):
@@ -57,54 +73,45 @@ class Lexical_features(Feature_extractor):
 
         if preprocessReq:
             # Request all preprocessing functions to be prepared
-            self.preprocessor.getSentCount()
+            self.testPreprocessor.gettokenizeSents()
             self.preprocessor.gettokenizeSents()
             return 1
 
         #TODO : Lemmatize tokens?
-        sentRichness = sparse.lil_matrix((self.preprocessor.getSentCount(),1))
+        trainSentRichness = self.getLexicalRichness(self.preprocessor.gettokenizeSents())
+        testSentRichness = self.getLexicalRichness(self.testPreprocessor.gettokenizeSents())
 
-        i = 0
-        for sentence in self.preprocessor.gettokenizeSents():
+        return trainSentRichness, testSentRichness, "Type token ratio"
+
+    def getLexicalToTokens(self, sents, lexicalTags):
+
+        lexicalTokensRatio = []
+        for sentence in sents:
+            lexicalCount = 0
+            for tagPOS in sentence:
+                if tagPOS in lexicalTags:
+                    lexicalCount += 1
             if len(sentence) is 0:
-                sentRichness[i] = 0
+                lexicalTokensRatio.append(0)
             else:
-                sentRichness[i] = (float(len(set(sentence)))/len(sentence))
-            i += 1
+                lexicalTokensRatio.append(float(lexicalCount) / len(sentence))
 
-        return sentRichness
+        return sparse.lil_matrix(lexicalTokensRatio).transpose()
 
     @featid(12)
     def lexicalToTokens(self, argString, preprocessReq=0):
         '''
         The ratio of lexical words to tokens in the sentence.
         '''
-        arguments = argString.split(',')
-        filePOS = 0
-        if int(arguments[0]):
-            # Use file of tagged sents (last argument)
-            filePOS = arguments[-1]
-            nonLexicalTags = arguments[1:-1]
-        else:
-            nonLexicalTags = arguments[1:]
+        trainPOS, testPOS, lexicalTags = self.parsePOSArgs(argString)
 
         if preprocessReq:
             # Request all preprocessing functions to be prepared
-            self.preprocessor.getSentCount()
-            self.preprocessor.getPOStagged(filePOS)
+            self.preprocessor.getPOStagged(trainPOS)
+            self.testPreprocessor.getPOStagged(testPOS)
             return 1
 
-        lexicalTokensRatio = sparse.lil_matrix((self.preprocessor.getSentCount(), 1))
-        i = 0
-        for sentence in self.preprocessor.getPOStagged(filePOS):
-            lexicalCount = 0
-            for tagPOS in sentence:
-                if tagPOS not in nonLexicalTags:
-                    lexicalCount += 1
-            if len(sentence) is 0:
-                lexicalTokensRatio[i] = 0
-            else:
-                lexicalTokensRatio[i] = (float(lexicalCount) / len(sentence))
-            i += 1
+        trainLexTokRatio = self.getLexicalToTokens(self.preprocessor.getPOStagged(trainPOS), lexicalTags)
+        testLexTokRatio = self.getLexicalToTokens(self.testPreprocessor.getPOStagged(testPOS), lexicalTags)
 
-        return lexicalTokensRatio
+        return trainLexTokRatio, testLexTokRatio, "Ratio of lexical words to tokens"

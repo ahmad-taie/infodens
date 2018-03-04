@@ -19,14 +19,18 @@ class Configurator:
 
     def __init__(self, configFile=None):
         self.configFile = configFile
+
+        self.inputFile = ""
+        self.inputClasses = ""
+        self.testSentsFile = ""
+        self.testClasses = ""
+
         self.featureIDs = []
         self.featargs = []
-        self.inputClasses = []
         self.classifiersList = []
         self.classifierArgs = []
         self.persistClassif = ""
         self.persistOnFull = False
-        self.inputFile = ""
         self.classifReport = ""
         self.corpusLM = ""
         self.featOutput = ""
@@ -48,6 +52,8 @@ class Configurator:
                 sys.exit()
 
             self.inputClasses = config["Input"].get("input classes", "")
+            self.testSentsFile = config["Input"].get("test file", "")
+            self.testClasses = config["Input"].get("test classes", "")
             self.corpusLM = config["Input"].get("training corpus", "")
             self.language = config["Input"].get("language", "en")
         else:
@@ -106,12 +112,10 @@ class Configurator:
                     args = args.split("\n")
                     for arg in args:
                         self.featureIDs.append(int(feat))
-                        #print(arg)
                         self.featargs.append(arg)
                 else:
                     self.featureIDs.append(int(feat))
-                    self.featargs.append(args)
-
+                    self.featargs.append("")
         else:
             print("No features requested.")
 

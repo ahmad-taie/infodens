@@ -9,29 +9,40 @@ from scipy import sparse
 
 
 class Surface_features(Feature_extractor):
+
+    def getAverageWordLen(self, sentences):
+
+        avgWordLen = []
+        for sentence in sentences:
+            if len(sentence) is 0:
+                avgWordLen.append(0)
+            else:
+                length = sum([len(s) for s in sentence])
+                avgWordLen.append(float(length) / len(sentence))
+
+        return sparse.lil_matrix(avgWordLen).transpose()
     
     @featid(1)    
     def averageWordLength(self, argString, preprocessReq=0):
+
         '''Find average word length of every sentence and return list. '''
 
         if preprocessReq:
             # Request all preprocessing functions to be prepared
-            self.preprocessor.getSentCount()
             self.preprocessor.gettokenizeSents()
+            self.testPreprocessor.gettokenizeSents()
             return 1
 
-        aveWordLen = sparse.lil_matrix((self.preprocessor.getSentCount(), 1))
+        aveWordLen = self.getAverageWordLen(self.preprocessor.gettokenizeSents())
+        testAveWordLen = self.getAverageWordLen(self.testPreprocessor.gettokenizeSents())
 
-        i = 0
-        for sentence in self.preprocessor.gettokenizeSents():
-            if len(sentence) is 0:
-                aveWordLen[i] = 0
-            else:
-                length = sum([len(s) for s in sentence])
-                aveWordLen[i] = (float(length) / len(sentence))
-            i += 1
+        return aveWordLen, testAveWordLen, "Average Sentence's word length"
 
-        return aveWordLen, "Average sentence length"
+    def getSentLen(self, sentences):
+        sentLen = []
+        for sent in sentences:
+            sentLen.append(len(sent))
+        return sparse.lil_matrix(sentLen).transpose()
 
     @featid(10)
     def sentenceLength(self, argString, preprocessReq=0):
@@ -39,25 +50,30 @@ class Surface_features(Feature_extractor):
 
         if preprocessReq:
             # Request all preprocessing functions to be prepared
-            self.preprocessor.getSentCount()
             self.preprocessor.gettokenizeSents()
+            self.testPreprocessor.gettokenizeSents()
             return 1
 
-        sentLen = sparse.lil_matrix((self.preprocessor.getSentCount(),1))
-        i = 0
-        for sentence in self.preprocessor.gettokenizeSents():
-            sentLen[i] = (len(sentence))
-            i += 1
+        sentLen = self.getSentLen(self.preprocessor.gettokenizeSents())
+        testSentLen = self.getSentLen(self.testPreprocessor.gettokenizeSents())
 
-        return sentLen
+        return sentLen, testSentLen, "Sentence Length"
 
-    @featid(8)
-    def parseTreeDepth(self, argString, preprocessReq=0):
-        '''Find depth of every sentence's parse tree and return list. '''
-        if preprocessReq:
-            # Request all preprocessing functions to be prepared
-            self.preprocessor.getParseTrees()
-            return 1
+    def getSyllableRatio(self, sentences, vowels):
+        sylRatios = []
+        for sent in sentences:
+            sylCount = 0
+            for word in sent:
+                word2List = list(word)
+                for i in range(len(word2List)-1):
+                    if word2List[i] in vowels and word2List[i+1] not in vowels:
+                        sylCount += 1
+
+            if len(sent) is 0:
+                sylRatios.append(0)
+            else:
+                sylRatios.append(float(sylCount)/len(sent))
+        return sparse.lil_matrix(sylRatios).transpose()
 
     @featid(2)
     def syllableRatio(self, argString, preprocessReq=0):
@@ -68,25 +84,17 @@ class Surface_features(Feature_extractor):
         '''
         if preprocessReq:
             # Request all preprocessing functions to be prepared
-            self.preprocessor.getSentCount()
+            self.testPreprocessor.gettokenizeSents()
             self.preprocessor.gettokenizeSents()
             return 1
 
-        vowels = ['a', 'e', 'i', 'o', 'u']
-        sylRatios = sparse.lil_matrix((self.preprocessor.getSentCount(), 1))
-        j = 0
-        for sentence in self.preprocessor.gettokenizeSents():
-            sylCount = 0
-            for word in sentence:
-                word2List = list(word)
-                for i in range(len(word2List)-1):
-                    if word2List[i] in vowels and word2List[i+1] not in vowels:
-                        sylCount += 1
+        if argString:
+            vowels = argString.split(",")
+        else:
+            # Assume English vowels lowercase
+            vowels = ['a', 'e', 'i', 'o', 'u']
 
-            if len(sentence) is 0:
-                sylRatios[j] = 0
-            else:
-                sylRatios[j] = (float(sylCount)/len(sentence))
-            j += 1
+        sylRatios = self.getSyllableRatio(self.preprocessor.gettokenizeSents(), vowels)
+        testSylRatios = self.getSyllableRatio(self.testPreprocessor.gettokenizeSents(), vowels)
 
-        return sylRatios
+        return sylRatios, testSylRatios, "Syllable ratio"
