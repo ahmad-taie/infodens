@@ -30,8 +30,6 @@ class Controller:
         self.classifReport = ""
 
         # array format of dataset and labels for classifying
-        self.trainSentsCount = 0
-        self.testSentsCount = 0
         self.trainFeats = []
         self.testFeats = []
         self.featDescriptors = []
@@ -100,6 +98,23 @@ class Controller:
         if self.testClasses:
             self.testClassesList = prep_serv.preprocessClassID(self.testClasses)
 
+    def scaleFeatures(self):
+        from sklearn import preprocessing as skpreprocess
+        scaler = skpreprocess.MaxAbsScaler(copy=False)
+        self.trainFeats = scaler.fit_transform(self.trainFeats)
+        self.testFeats = scaler.fit_transform(self.testFeats)
+
+    def outputTrainFeatures(self):
+        """Output features if requested."""
+        if not self.featOutput:
+            print("Feature output was not specified.")
+        else:
+            print("Outputting train features..")
+            formatter = format.Format(self.trainFeats, self.trainClassesList,
+                                      self.featDescriptors)
+            # if format is not set in config, will use a default libsvm output.
+            formatter.outFormat("trainFeats_{0}".format(self.featOutput), self.featOutFormat)
+
     def classesSentsMismatch(self, inputFile, testFile):
         prep_serv = Preprocess_Services()
         trainSentsCount = len(prep_serv.preprocessBySentence(inputFile))
@@ -123,6 +138,7 @@ class Controller:
                 print("Count of Classes and Sentences differ. Exiting.")
                 sys.exit()
 
+        # Start feature extraction
         extractedTrainFeats = []
         extractedTestFeats = []
         for configurator in self.configurators:
@@ -159,30 +175,14 @@ class Controller:
 
         self.trainFeats, trainDims = featman.mergeFeats(extractedTrainFeats)
         self.testFeats, testDims = featman.mergeFeats(extractedTestFeats)
-        print("Final train feature matrix dimensions: {0}\r\n"
-              "Final test feature matrix dimensions: {1}".format(trainDims, testDims))
+        print("Final train feature matrix dimensions: {0}".format(trainDims))
+
+        print("Final test feature matrix dimensions: {0}".format(testDims))
         self.scaleFeatures()
 
         print("Feature Extraction Done. ")
 
         self.outputTrainFeatures()
-
-    def scaleFeatures(self):
-        from sklearn import preprocessing as skpreprocess
-        scaler = skpreprocess.MaxAbsScaler(copy=False)
-        self.trainFeats = scaler.fit_transform(self.trainFeats)
-        self.testFeats = scaler.fit_transform(self.testFeats)
-
-    def outputTrainFeatures(self):
-        """Output features if requested."""
-        if not self.featOutput:
-            print("Feature output was not specified.")
-        else:
-            print("Outputting train features..")
-            formatter = format.Format(self.trainFeats, self.trainClassesList,
-                                      self.featDescriptors)
-            # if format is not set in config, will use a default libsvm output.
-            formatter.outFormat("trainFeats_{0}".format(self.featOutput), self.featOutFormat)
 
     def outputTestFeatures(self, classifierName=""):
 

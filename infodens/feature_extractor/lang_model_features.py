@@ -68,18 +68,17 @@ class Lang_model_features(Feature_extractor):
     @featid(17)
     def langModelFeat(self, argString, preprocessReq=0):
         '''
-        Extracts n-gram Language Model preplexity features.
+        Extracts n-gram Language Model perplexity features.
         '''
-        ngramOrder = 3
-        langModel = 0
-        # Binary1/0,ngramOrder,LMFilePath(ifBinary1)
-        arguments = argString.split(',')
-        if(int(arguments[0])):
-            # Use given langModel
-            # (problems from spaces in path can be avoided by quotes)
-            langModel = "{0}".format(arguments[-1])
+        parser = argparse.ArgumentParser(description='LM perplexity args')
+        parser.add_argument("-lm", help="Language model of a corpus.",
+                            type=str, default="")
+        parser.add_argument("-ngram", help="Order of language model.",
+                            type=int, default=3)
 
-        ngramOrder = int(arguments[1])
+        argsOut = parser.parse_args(argString.split())
+        ngramOrder = argsOut.ngram
+        langModel = argsOut.lm
 
         if preprocessReq:
             # Request all preprocessing functions to be prepared
@@ -131,7 +130,7 @@ class Lang_model_features(Feature_extractor):
     @featid(18)
     def langModelPOSFeat(self, argString, preprocessReq=0):
         '''
-        Extracts n-gram POS language model preplexity features.
+        Extracts n-gram POS language model perplexity features.
         '''
         # -pos_train -pos_test -pos_corpus -pos_lm -ngram=3
         taggedInput, taggedTest, taggedCorpus, langModel, ngramOrder = self.parsePOSArgs(argString)
@@ -208,35 +207,16 @@ class Lang_model_features(Feature_extractor):
 
     def ngramArgCheck(self, argString):
 
-        #format : 1,2,5
+        parser = argparse.ArgumentParser(description='Ngram quantile surprisal args')
+        parser.add_argument("-ngram", help="Order of ngrams.",
+                            type=int, default=1)
+        parser.add_argument("-cutoff", help="cuttoff frequency",
+                            type=int, default=1)
+        parser.add_argument("-n_quantiles", help="number of quantiles",
+                            type=int, default=4)
+        argsOut = parser.parse_args(argString.split())
 
-        status = 1
-        n = 0
-        freq = 1
-        #default of 4 splits
-        splits = 4
-
-        argStringList = argString.split(',')
-        if argStringList[0].isdigit():
-            n = int(argStringList[0])
-        else:
-            print('Error: n should be an integer')
-            status = 0
-        if len(argStringList) > 1:
-            if argStringList[1].isdigit():
-                freq = int(argStringList[1])
-            else:
-                print('Error: frequency should be an integer')
-                status = 0
-            # splits
-            if len(argStringList) > 2:
-                if argStringList[2].isdigit():
-                    splits = int(argStringList[2])
-                else:
-                    print('Error: splits should be an integer')
-                    status = 0
-
-        return status, n, freq, splits
+        return argsOut.ngram, argsOut.cutoff, argsOut.n_quantiles
 
     def getQuantiles(self, listOfSentences, n, quantile, finNgram):
 
@@ -273,10 +253,7 @@ class Lang_model_features(Feature_extractor):
             self.preprocessor.gettokenizeSents()
             return 1
 
-        status, n, freq, nQuantas = self.ngramArgCheck(argString)
-        if not status:
-            # Error in argument.
-            return
+        n, freq, nQuantas = self.ngramArgCheck(argString)
 
         tokensCorpus = self.preprocessor.prep_servs.getFileTokens(self.preprocessor.getCorpusLMName())
 

@@ -57,12 +57,11 @@ SVC_linear
 #33:100
 #33:model1
 #34
-#17:1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
-#17:0,3
+#17: -ngram 3 -lm data/30k.literature.orig_tran.low.en_langModel3.lm
+#17: -ngram 3
 #18:-pos_corpus data/testSent2.txt_tagged_Input.txt
-#19:1,10,4
-#19:2,1,4
+#19: -ngram 1 -cutoff 10 -n_quantiles 4
 #20: -ngram 3 -lm data/testSent2.txt_langModel3.lm
 #21 : -pos_corpus data/testSent2.txt_tagged_Input.txt
 #77 : 0,5
-801
+#801: -dim 100 -epochs 25
