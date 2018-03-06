@@ -51,7 +51,7 @@ class FastText_features(Feature_extractor):
         sents = self.preprocessor.getPlainSentences()
         model = trainFastText(sents, classes)
 
-        testSents = self.preprocessor.getPlainSentences()
+        testSents = self.testPreprocessor.getPlainSentences()
 
         trainFeats = []
         for sent in sents:
@@ -63,7 +63,7 @@ class FastText_features(Feature_extractor):
             testFeats.append(model.get_sentence_vector(sent.strip()))
         testFeats = sparse.lil_matrix(testFeats)
 
-        print("Learned embeddings length : {0}".format((trainFeats.get_shape()[0])))
+        print("Learned embeddings length : {0}".format((trainFeats.get_shape()[1])))
 
         return trainFeats, testFeats, "fastText embeddings"
 

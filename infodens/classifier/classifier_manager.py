@@ -13,9 +13,10 @@ from infodens.classifier.classifier import Classifier
 
 class Classifier_manager:
 
-    def __init__(self, classifs, classifArgs, trainSet, trainLabels,
+    def __init__(self, predict, classifs, classifArgs, trainSet, trainLabels,
                  testSet, testLabels, persistFile, threads=1):
 
+        self.predict = predict
         self.classifierArgs = classifArgs
         self.classifierIDs = classifs
         self.classifRank = []
@@ -78,7 +79,7 @@ class Classifier_manager:
     def runClassifier(self, classifierToRun):
         classifReport = str(type(classifierToRun).__name__)
         classifReport += ":\n"
-        classifReport += classifierToRun.runClassifier()
+        classifReport += classifierToRun.evaluateClassifier()
         classifReport += "\n"
 
         # Given file name to persist, persist classifier to file
@@ -86,6 +87,15 @@ class Classifier_manager:
             classifierToRun.persist(self.persistFile)
 
         return classifReport
+
+    def predictClassifier(self, classifierToRun):
+        labels = classifierToRun.predict()
+
+        # Given file name to persist, persist classifier to file
+        if self.persistFile:
+            classifierToRun.persist(self.persistFile)
+
+        return labels
 
     def callClassifiers(self):
 
@@ -100,15 +110,21 @@ class Classifier_manager:
                                          self.testLabels, self.threadsCount))
 
         classifReports = []
-
+        labels = []
         for i in range(0, len(classifierObjs)):
             classif = classifierObjs[i]
-            report = self.runClassifier(classif)
+            report = ""
+            if not self.predict:
+                report += self.runClassifier(classif)
+            else:
+                labels.append(self.predictClassifier(classif))
+                report += "\r\nPredicted with classifier: {0}".format(self.classifierIDs[i])
             if self.classifRank[i]:
                 print("Ranking features...")
                 report += classif.rankFeats(self.classifRankN[i])
                 print("Ranking done.")
-
             classifReports.append(report)
 
-        return '\n'.join(classifReports)
+        return '\n'.join(classifReports), labels
+
+

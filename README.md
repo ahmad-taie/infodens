@@ -65,16 +65,11 @@ kenlm: kenlm/bin
 # The maximum number of processes to run
 threads : 4
 
-# How many folds of Cross validation
-# followed by split percent (Optional with default as 30%) 
-folds : 3 0.3
-
 [Output]
 
 # To persist the models simply give a file name to the persist 
 # parameter. The names of the classifiers will be preappended.
-# Add -f to train on the full input before persisting (Optional)
-persist model: testClass.skl -f
+persist model: testClass.skl
 
 # The classification report output
 output classifier: report1.txt

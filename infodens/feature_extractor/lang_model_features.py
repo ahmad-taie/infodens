@@ -313,7 +313,7 @@ class Lang_model_features(Feature_extractor):
         listOfSentences = self.preprocessor.gettokenizeSents()
         testSentences = self.testPreprocessor.gettokenizeSents()
         # +1 for OOV
-        
+
         print("Extracting ngram feats.")
         trainFeatures = self.getQuantiles(listOfSentences, n, quantile, finNgram)
         testFeatures = self.getQuantiles(testSentences, n, quantile, finNgram)

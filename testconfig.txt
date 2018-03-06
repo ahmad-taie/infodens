@@ -1,24 +1,29 @@
 [Input]
 # params are parsed after ':' or '='
-input file : data/testSent2.txt
-input classes:  data/testSentClasses2.txt
-test file : data/testSent2.txt
-test classes:  data/testSentClasses2.txt
+#input file : sents_ag_news.train
+#input classes:  classes_ag_news.train
+#test file : sents_ag_news.test
+#test classes:  classes_ag_news.test
+
+
+input file : data/sent2.train
+input classes:  data/sent2_classes.train
+test file : data/sent2.test
+test classes:  data/sent2_classes.test
+#predict file : data/sent2.test
 training corpus: data/30k.literature.orig_tran.low.en
-#input classes: data/testSentRegres2.txt
 language : eng
 
 [Output]
 
-output classifier: report1.txt
-#output features: feats libsvm csv
+#output classifier: report1.txt
+#output features: feats libsvm
 #persist models: testClass.skl
 
 [Settings]
 #srilm : srilm-1.7.2/bin/i686-m64
 kenlm : /home/gilani/Documents/Github/kenlm/build/bin/
 threads : 4
-folds : 1 0.2
 
 [Classifiers]
 
@@ -34,12 +39,13 @@ SVC_linear
 #MLP_classifier
 
 [Features]
-1
+#1
 # This is a comment
 #2: a,b,c,d
 #3: -pos_tags J,N,V,R
 #3: -pos_tags J,N,V,R -pos_train data/testSent2.txt_tagged_Input.txt
-4: -ngram 1 -cutoff 1
+#4: -ngram 1 -cutoff 1
+4
 #4: -ngram 2 -cutoff 1
 #5: -ngram 1 -cutoff 10
 #5: -ngram 1 -cutoff 10 -pos_train data/testSent2.txt_tagged_Input.txt
@@ -54,9 +60,9 @@ SVC_linear
 #17:1,3,data/30k.literature.orig_tran.low.en_langModel3.lm
 #17:0,3
 #18:-pos_corpus data/testSent2.txt_tagged_Input.txt
-19:1,10,4
+#19:1,10,4
 #19:2,1,4
 #20: -ngram 3 -lm data/testSent2.txt_langModel3.lm
 #21 : -pos_corpus data/testSent2.txt_tagged_Input.txt
 #77 : 0,5
-#801
+801

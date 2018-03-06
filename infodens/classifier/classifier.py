@@ -3,7 +3,6 @@ Created on Aug 23, 2016
 
 @author: admin
 '''
-import numpy as np
 import sklearn
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import average_precision_score, precision_score, classification_report
@@ -23,7 +22,6 @@ class Classifier(object):
     ytest = []
 
     threadCount = 1
-    model = 0
 
     classifierName = ''
     
@@ -34,8 +32,11 @@ class Classifier(object):
         self.ytest = testY
         self.threadCount = threads
         self.rankReport = ""
+        self.model = None
+        self.train()
 
     def predict(self):
+        print("Predicting labels for {0}.".format(self.classifierName))
         return self.model.predict(self.Xtest)
 
     def persist(self, fileName):
@@ -45,6 +46,7 @@ class Classifier(object):
         joblib.dump(self.model, output)
 
     def evaluate(self):
+        print("Evaluating test set..")
         y_pred = self.predict()
         return accuracy_score(self.ytest, y_pred),\
                precision_score(self.ytest, y_pred, average="weighted"),\
@@ -64,20 +66,15 @@ class Classifier(object):
 
         return self.rankReport
 
-    def runClassifier(self):
+    def evaluateClassifier(self):
         """ Run the provided classifier."""
-        acc = []; pre = []; rec = []; fsc = []
 
-        self.train()
+        # Test classes provided, score...
         accu, prec, reca, fsco = self.evaluate()
-        acc.append(accu)
-        pre.append(prec)
-        rec.append(reca)
-        fsc.append(fsco)
-
-        classifReport = 'Average Accuracy: ' + str(np.mean(acc))
-        classifReport += '\nAverage Precision: ' + str(np.mean(pre))
-        classifReport += '\nAverage Recall: ' + str(np.mean(rec))
-        classifReport += '\nAverage F-score: ' + str(np.mean(fsc))
-
+        classifReport = 'Accuracy: ' + str(accu)
+        classifReport += '\nPrecision: ' + str(prec)
+        classifReport += '\nRecall: ' + str(reca)
+        classifReport += '\nF-score: ' + str(fsco)
         return classifReport
+
+

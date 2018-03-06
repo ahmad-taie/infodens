@@ -160,9 +160,9 @@ class Feature_manager:
         trainFeatures = sparse.hstack(trainFeatures, "lil")
         testFeatures = sparse.hstack(testFeatures, "lil")
 
-        featCount = trainFeatures.get_shape()[1]
-        sentCount = trainFeatures.get_shape()[0]
-        featVec = "Feature vector dimensions: {0}x{1}".format(sentCount, featCount)
-        print(featVec)
+        #featCount = trainFeatures.get_shape()[1]
+        #sentCount = trainFeatures.get_shape()[0]
+        #featVec = "Feature vector dimensions: {0}x{1}".format(sentCount, featCount)
+        #print(featVec)
 
         return trainFeatures, testFeatures, self.featDescriptors

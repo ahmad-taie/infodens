@@ -6,8 +6,8 @@ Created on Aug 23, 2016
 
 from infodens.classifier.classifier import Classifier
 from sklearn.svm import LinearSVR
-from sklearn.model_selection import GridSearchCV
 import numpy as np
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from scipy.stats import pearsonr
 import time
@@ -56,24 +56,14 @@ class SVR_linear(Classifier):
         return outStr + str(sorted(enumerate(rankReport)
                                    , key=lambda x: x[1], reverse=True)[:rankN])
 
-    def runClassifier(self):
+    def evaluateClassifier(self):
         """ Overriding default running"""
-        all_mse = []
-        all_mae = []
-        all_r = []
 
-        for i in range(self.n_foldCV):
-            self.shuffle()
-            self.splitTrainTest()
-            self.train()
-            mae, mse, r = self.evaluate()
-            all_mse.append(mse)
-            all_mae.append(mae)
-            all_r.append(r)
+        self.train()
+        mae, mse, r = self.evaluate()
 
-        classifReport = "Average MAE: {0}".format( np.mean( all_mae ) )
-        classifReport += "\nAverage MSE: {0}".format( np.mean( all_mse ) )
-        classifReport += "\nAverage Pearson's r: {0}".format( np.mean( all_r ) )
-
+        classifReport = "Average MAE: {0}".format( mae )
+        classifReport += "\nAverage MSE: {0}".format( mse )
+        classifReport += "\nAverage Pearson's r: {0}".format(r)
 
         return classifReport

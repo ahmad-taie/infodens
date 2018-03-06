@@ -24,13 +24,13 @@ class Configurator:
         self.inputClasses = ""
         self.testSentsFile = ""
         self.testClasses = ""
+        self.predictSentsFile = ""
 
         self.featureIDs = []
         self.featargs = []
         self.classifiersList = []
         self.classifierArgs = []
         self.persistClassif = ""
-        self.persistOnFull = False
         self.classifReport = ""
         self.corpusLM = ""
         self.featOutput = ""
@@ -39,21 +39,29 @@ class Configurator:
         self.language = 'eng'
         self.srilmBinPath = ""
         self.kenlmBinPath = ""
-        self.cv_folds = 1
-        self.cv_Percent = 0
 
     def getParams(self, config):
 
         # Read the Input values
         if "Input" in config:
             self.inputFile = config["Input"].get("input file", "")
-            if not self.inputFile:
-                print("Error: Missing input files.")
-                sys.exit()
-
             self.inputClasses = config["Input"].get("input classes", "")
             self.testSentsFile = config["Input"].get("test file", "")
+            self.predictSentsFile = config["Input"].get("predict file", "")
             self.testClasses = config["Input"].get("test classes", "")
+            if not self.inputFile or not self.inputClasses\
+                    or not (self.testSentsFile or self.predictSentsFile):
+                print("Error: Files missing. Requires: Input file and "
+                      "classes and test/predict file.")
+                sys.exit()
+            if (self.testSentsFile or self.testClasses) and self.predictSentsFile:
+                print("Error: Only Test or Predict in one run.")
+                sys.exit()
+            if not self.predictSentsFile and not (self.testSentsFile and self.testClasses):
+                print("Error: Missing test file or classes.")
+                print("If predicting use \"predict file:\" argument.")
+                sys.exit()
+
             self.corpusLM = config["Input"].get("training corpus", "")
             self.language = config["Input"].get("language", "en")
         else:
@@ -66,32 +74,27 @@ class Configurator:
             self.kenlmBinPath = config["Settings"].get("kenlm", "")
             self.srilmBinPath = config["Settings"].get("srilm", "")
 
-            configLine = config["Settings"].get("folds", "1 0")
-            configLine = configLine.strip().split()
-            if configLine[0].isdigit():
-                folds = int(configLine[0])
-                if folds > 0:
-                    self.cv_folds = folds
-                    if len(configLine) > 1:
-                        self.cv_Percent = float(configLine[1])
-                else:
-                    print("Number of folds is not a positive integer.")
-                    sys.exit()
-            else:
-                print("Number of folds is not a positive integer.")
-                sys.exit()
+            # TODO: Will be reused as future feature to split input file
+            # configLine = config["Settings"].get("folds", "1 0")
+            # configLine = configLine.strip().split()
+            # if configLine[0].isdigit():
+            #     folds = int(configLine[0])
+            #     if folds > 0:
+            #         self.cv_folds = folds
+            #         if len(configLine) > 1:
+            #             self.cv_Percent = float(configLine[1])
+            #     else:
+            #         print("Number of folds is not a positive integer.")
+            #         sys.exit()
+            # else:
+            #     print("Number of folds is not a positive integer.")
+            #     sys.exit()
 
         # Read the output values
         if "Output" in config:
             self.classifReport = config["Output"].get("classifier report", "")
 
-            configLine = config["Output"].get("persist models", "")
-            configLine = configLine.strip().split()
-            if configLine:
-                self.persistClassif = configLine[0]
-                if len(configLine) > 1 and "f" in configLine[1]:
-                    self.persistOnFull = True
-                    print("Model will be persisted on full input. ")
+            self.persistClassif = config["Output"].get("persist models", "")
 
             outFeats = config["Output"].get("output features", "")
             if outFeats:

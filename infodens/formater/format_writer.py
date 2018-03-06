@@ -21,7 +21,9 @@ class Format_writer:
 
     def writeFormats(self, X, Y, theFile, formats):
         for form in formats:
-            self.formatwriters[form](X, Y, "{0}.{1}".format(theFile, form))
+            outputFile = "{0}.{1}".format(theFile, form)
+            self.formatwriters[form](X, Y, outputFile)
+            print("File {0} written.".format(outputFile))
 
     # Define a new format writer method here as below
 

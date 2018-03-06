@@ -9,7 +9,7 @@ from .format_writer import Format_writer
 
 class Format:
 
-    def __init__(self, fsX, fsy, featDescrips):
+    def __init__(self, fsX, fsy, featDescrips=""):
         self.X = fsX
         self.Y = fsy
         self.featDescriptions = featDescrips
@@ -19,12 +19,19 @@ class Format:
             for i in range(0, len(self.featDescriptions)):
                 classifOut.write("Feature Descriptors for run {0}:"
                                  " \r\n{1}".format(i, "\r\n".join(self.featDescriptions[i])))
+        print("File {0} written.".format(fileName))
+
+    def outPredictedLabels(self, outName, labels):
+        import numpy
+        numpy.savetxt(outName, labels)
+        print("File {0} written.".format(outName))
 
     def outFormat(self, fileName, formatType):
         print("Writing features to file.")
         writer = Format_writer()
         writer.writeFormats(self.X, self.Y, fileName, formatType)
-        self.outputDescriptor("feat_descriptors_{0}.desc".format(fileName))
-        print("Feature file written.")
+        if self.featDescriptions:
+            self.outputDescriptor("feat_descriptors_{0}.desc".format(fileName))
+        print("Feature file(s) written.")
 
 
