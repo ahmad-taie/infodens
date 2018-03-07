@@ -17,27 +17,27 @@ class Bag_of_ngrams_features(Feature_extractor):
 
     def ngramArgumentCheck(self, args, ngramType):
 
-        pos_train = ""
-        pos_test = ""
+        proc_train = ""
+        proc_test = ""
         parser = argparse.ArgumentParser(description='Bag of ngrams args')
         parser.add_argument("-train", help="Path for file to build ngram vector from.",
                             type=str, default="")
-        if ngramType == "POS":
-            parser.add_argument("-pos_train", help="Path for POS tagged train sentences.",
+        if ngramType != "plain":
+            parser.add_argument("-proc_train", help="Path for POS/Lemma tagged train sentences.",
                                 type=str, default="")
-            parser.add_argument("-pos_test", help="Path for POS tagged test sentences.",
+            parser.add_argument("-proc_test", help="Path for POS/lemma tagged test sentences.",
                                 type=str, default="")
         parser.add_argument("-ngram", help="Order of ngram.",
-                            type=int, default=3)
+                            type=int, default=1)
         parser.add_argument("-cutoff", help="Min. Cutoff for ngram.",
                             type=int, default=1)
 
         argsOut = parser.parse_args(args.split())
-        if ngramType == "POS":
-            pos_train = argsOut.pos_train
-            pos_test = argsOut.pos_test
+        if ngramType != "plain":
+            proc_train = argsOut.proc_train
+            proc_test = argsOut.proc_test
 
-        return argsOut.ngram, argsOut.cutoff, argsOut.train, pos_train, pos_test
+        return argsOut.ngram, argsOut.cutoff, argsOut.train, proc_train, proc_test
 
     def preprocessReqHandle(self, typeNgram, taggedInp, taggedTest):
         if typeNgram is "plain":
@@ -49,11 +49,15 @@ class Bag_of_ngrams_features(Feature_extractor):
             if not taggedTest:
                 self.testPreprocessor.getPOStagged()
         elif typeNgram is "lemma":
-            self.preprocessor.getLemmatizedSents()
-            self.testPreprocessor.getLemmatizedSents()
+            if not taggedInp:
+                self.preprocessor.getLemmatizedSents()
+            if not taggedTest:
+                self.testPreprocessor.getLemmatizedSents()
         elif typeNgram is "mixed":
-            self.preprocessor.getMixedSents()
-            self.testPreprocessor.getMixedSents()
+            if not taggedInp:
+                self.preprocessor.getMixedSents()
+            if not taggedTest:
+                self.testPreprocessor.getMixedSents()
         else:
             #Assume plain
             self.preprocessor.gettokenizeSents()
@@ -91,11 +95,11 @@ class Bag_of_ngrams_features(Feature_extractor):
             listOfSentences = self.preprocessor.getPOStagged(taggedInp)
             testListOfSentences = self.testPreprocessor.getPOStagged(taggedInp)
         elif ngramType is "lemma":
-            listOfSentences = self.preprocessor.getLemmatizedSents()
-            testListOfSentences = self.testPreprocessor.getLemmatizedSents()
+            listOfSentences = self.preprocessor.getLemmatizedSents(taggedInp)
+            testListOfSentences = self.testPreprocessor.getLemmatizedSents(taggedInp)
         elif ngramType is "mixed":
-            listOfSentences = self.preprocessor.getMixedSents()
-            testListOfSentences = self.testPreprocessor.getMixedSents()
+            listOfSentences = self.preprocessor.getMixedSents(taggedInp)
+            testListOfSentences = self.testPreprocessor.getMixedSents(taggedInp)
         else:
             #Assume plain
             listOfSentences = self.preprocessor.gettokenizeSents()

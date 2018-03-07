@@ -117,7 +117,12 @@ class Preprocess:
 
         return self.taggedPOSSents
         
-    def getLemmatizedSents(self):
+    def getLemmatizedSents(self, lemmasFile=""):
+
+        if lemmasFile:
+            # Return tokens from Lemma file give
+            return self.prep_servs.getFileTokens(lemmasFile)
+
         """Lemmatize and return sentences."""
         if not self.lemmatizedSents:
             print("Lemmatizing..")
@@ -130,7 +135,11 @@ class Preprocess:
 
         return self.lemmatizedSents
         
-    def getMixedSents(self):
+    def getMixedSents(self, mixedFile=""):
+        if mixedFile:
+            # Return tokens from Lemma file give
+            return self.prep_servs.getFileTokens(mixedFile)
+
         """Build and return mixed sentences (POS for J,N,V, or R)"""
         if not self.mixedSents:
             print("Getting mixed sentences..")
