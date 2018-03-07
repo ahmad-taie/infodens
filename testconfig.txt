@@ -44,11 +44,10 @@ SVC_linear
 #2: a,b,c,d
 #3: -pos_tags J,N,V,R
 #3: -pos_tags J,N,V,R -pos_train data/sent2.train
-#4: -ngram 1 -cutoff 1
-4
+4: -ngram 1 -cutoff 1
 #4: -ngram 2 -cutoff 1
 #5: -ngram 1 -cutoff 10
-5: -ngram 1 -cutoff 10
+#5: -ngram 1 -cutoff 10
 #6: -ngram 1 -cutoff 10
 #7: -ngram 1 -cutoff 10
 #10
@@ -60,8 +59,8 @@ SVC_linear
 #17: -ngram 3 -lm data/30k.literature.orig_tran.low.en_langModel3.lm
 #17: -ngram 3
 #18:-pos_corpus data/testSent2.txt_tagged_Input.txt
-19: -ngram 1 -cutoff 10 -n_quantiles 4
+#19: -ngram 1 -cutoff 10 -n_quantiles 4
 #20: -ngram 3 -lm data/testSent2.txt_langModel3.lm
 #21 : -pos_corpus data/testSent2.txt_tagged_Input.txt
-#77 : 0,5
+#77
 #801: -dim 100 -epochs 25

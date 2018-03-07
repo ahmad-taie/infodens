@@ -10,6 +10,7 @@ import numpy as np
 import subprocess
 import os
 import codecs
+import argparse
 
 
 class UID_features(Feature_extractor):
@@ -29,16 +30,15 @@ class UID_features(Feature_extractor):
         '''
         Extracts n-gram Language Model surprisal variance.
         '''
-        ngramOrder = 3
-        langModel = 0
-        # Binary1/0,ngramOrder,LMFilePath(ifBinary1)
-        arguments = argString.split(',')
-        if(int(arguments[0])):
-            # Use given langModel
-            # (problems from spaces in path can be avoided by quotes)
-            langModel = "{0}".format(arguments[-1])
+        parser = argparse.ArgumentParser(description='Variance in sentence probability args')
+        parser.add_argument("-lm", help="Language model of a corpus.",
+                            type=str, default="")
+        parser.add_argument("-ngram", help="Order of language model.",
+                            type=int, default=3)
 
-        ngramOrder = int(arguments[1])
+        argsOut = parser.parse_args(argString.split())
+        ngramOrder = argsOut.ngram
+        langModel = argsOut.lm
 
         if preprocessReq:
             # Request all preprocessing functions to be prepared
