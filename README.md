@@ -6,7 +6,22 @@ This framework provides a quick way to generate hand-crafted and learned feature
 
 # Setup & Requirements
 
-The tool is written entirely in Python (3.x supported) so it runs without compilation. However, you still need to install the required dependencies which are listed in the Wiki. If you are using Windows, you might find it easier to install a Python distribution like Anaconda or Canopy.
+The framework is written entirely in Python (3.x supported) so it runs without compilation. However, you still need to install the required dependencies. If you are using Windows, you might find it easier to install a Python distribution like Anaconda or Canopy.
+
+The following libraries are required:
+
+* [NumPy](http://www.numpy.org/) & [SciPy](https://www.scipy.org/)
+* [scikit-learn](http://scikit-learn.org/stable/install.html)
+* [NLTK](https://www.nltk.org/install.html) with datasets.
+* [configparser](https://docs.python.org/3/library/configparser.html)
+* [joblib](https://pythonhosted.org/joblib/installing.html)
+* [gensim](https://radimrehurek.com/gensim/) To generate word Embeddings.
+* [fastText](https://github.com/facebookresearch/fastText) for Python. For fastText features.
+* [liac-arff](https://pypi.python.org/pypi/liac-arff) To output features in the arff format.
+
+If you use ngram language model features, download and compile one of the following:
+* [KenLM](https://github.com/kpu/kenlm) with Python module.
+* [SRILM](http://www.speech.sri.com/projects/srilm/)
 
 # Running the toolkit
 
@@ -149,9 +164,9 @@ Ngram bag of POS | 5 | Ngram bag of POS |  Optional parameters: <li> -ngram : Or
 Ngram bag of mixed words | 6 | Ngram bag of mixed words, sentences are tagged and only tags that start with J,N,V, or R are left, the others are actual words (Tagged with NLTK) | Optional parameters: <li> -ngram : Order of ngram. (Default = 1: Unigrams) </li> <li> -cutoff : Minimum cutoff frequency for ngram. (Default = 1) </li> <li> -proc_train : Path for mixed train sentences. </li> <li> -proc_test : Path for mixed test sentences. </li> <li> -train : Path for file to build ngram vector from. (Default is train sentences) </li> 
 Ngram bag of lemmas | 7 | Ngram bag of lemmas (lemmatized using NLTK WordNetLemmatizer) | Optional parameters: <li> -ngram : Order of ngram. (Default = 1: Unigrams) </li> <li> -cutoff : Minimum cutoff frequency for ngram. (Default = 1) </li> <li> -proc_train : Path for lemmatized train sentences. </li> <li> -proc_test : Path for lemmatized test sentences. </li> <li> -train : Path for file to build ngram vector from. (Default is train sentences) </li> 
 Perplexity language model | 17 | Using provided tool to build a language model (or use the one given) then compute the sentence scores (log probabilities) and perplexities. | Optional parameters: <li> -lm : Given language model </li> <li> -ngram : Ngram of the LM and feature (default=3) </li>
-Perplexity language model POS | 18 | Using provided tool to build a language model (or use given one) then compute the sentence scores (log probabilities) and perplexities for POS tagged sentences | Optional parameters:  <li> -ngram : Ngram of the LM and feature (default=3) </li>  <li> -pos_train : Path for POS tagged train sentences. </li>  <li> -pos_test : Path for POS tagged test sentences. </li>  <li> -pos_corpus :  Path for POS tagged corpus. </li>  <li> -pos_lm :  Path for POS language model. </li>  <li> </li>
+Perplexity language model POS | 18 | Using provided tool to build a language model (or use given one) then compute the sentence scores (log probabilities) and perplexities for POS tagged sentences | Optional parameters:  <li> -ngram : Ngram of the LM and feature (default=3) </li>  <li> -pos_train : Path for POS tagged train sentences. </li>  <li> -pos_test : Path for POS tagged test sentences. </li>  <li> -pos_corpus :  Path for POS tagged corpus. </li>  <li> -pos_lm :  Path for POS language model. </li>
 Surprisal log probability | 20 | Using provided tool to build a language model (or use given one) then compute the sentence scores in units of bits (log2 probabilities) and perplexities. | Optional parameters: <li> -lm : Given language model </li> <li> -ngram : Ngram of the LM and feature (default=3) </li>
-Surprisal POS log probability | 21 | Using provided tool to build a language model (or use given one) then compute the sentence scores in units of bits (log2 probabilities) and perplexities for POS tagged sentences (Default: NLTK tagger) | Optional parameters:  <li> -ngram : Ngram of the LM and feature (default=3) </li>  <li> -pos_train : Path for POS tagged train sentences. </li>  <li> -pos_test : Path for POS tagged test sentences. </li>  <li> -pos_corpus :  Path for POS tagged corpus. </li>  <li> -pos_lm :  Path for POS language model. </li>  <li> </li>
+Surprisal POS log probability | 21 | Using provided tool to build a language model (or use given one) then compute the sentence scores in units of bits (log2 probabilities) and perplexities for POS tagged sentences (Default: NLTK tagger) | Optional parameters:  <li> -ngram : Ngram of the LM and feature (default=3) </li>  <li> -pos_train : Path for POS tagged train sentences. </li>  <li> -pos_test : Path for POS tagged test sentences. </li>  <li> -pos_corpus :  Path for POS tagged corpus. </li>  <li> -pos_lm :  Path for POS language model. </li>
 Ngram frequency quantile distribution | 19 | Models the input sequence as a frequency distribution over quantiles | <li> -ngram : Order of ngram. (Default = 1: Unigrams) </li> <li> -cutoff : Minimum cutoff frequency for ngram. (Default = 1) </li> <li> -n_quantiles : number of quantiles (default=4) </li> 
 Word vector average | 33 | Trains or uses a word2vec model (gensim) and gets the average of all word vectors per sentence | Example: 200 <li> Vector length (default 100) </li> or: models\vecModel.ml <li> Path to the word embeddings model </li>
 FastText learned embeddings | 33 | Uses the learned sentence embedding from training a fastText model on the train data and classes. | Optional parameters: <li> -epochs  number of training epochs (default = 10) </li> <li> -dim: Length of embeddings vector. (default=100) </li> <li> -wordNgrams : Ngram features to add. (default=0) </li> <li> -lr : learning rate. (default=1.0) </li>
