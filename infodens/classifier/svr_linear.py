@@ -45,7 +45,12 @@ class SVR_linear(Classifier):
 
         self.model = clf.best_estimator_
 
-    def rankFeats(self, rankN=-1):
+    def rankFeats(self):
+        rankN = self.argParse.rank
+        if not rankN:
+            return ""
+
+        print("Ranking features...")
         # Override for regression and classifiers with readily available
         # Rankers
         from sklearn.feature_selection import mutual_info_regression

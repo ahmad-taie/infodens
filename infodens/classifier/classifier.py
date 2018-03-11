@@ -8,6 +8,7 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import average_precision_score, precision_score, classification_report
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score, recall_score
+import argparse
 
 
 class Classifier(object):
@@ -25,7 +26,7 @@ class Classifier(object):
 
     classifierName = ''
     
-    def __init__(self, dataX, datay, testX, testY, threads=1):
+    def __init__(self, dataX, datay, testX, testY, args, threads=1):
         self.Xtrain = dataX
         self.ytrain = datay
         self.Xtest = testX
@@ -33,7 +34,18 @@ class Classifier(object):
         self.threadCount = threads
         self.rankReport = ""
         self.model = None
+        if args:
+            self.args = args.split()
+        else:
+            self.args = ""
+        self.args = self.argParser()
         self.train()
+
+    def argParser(self, args=""):
+        parser = argparse.ArgumentParser(description='{0} arguments.'.format(self.classifierName))
+        parser.add_argument("-rank", help="Rank N features",
+                            type=int, default=0)
+        return parser.parse_args(args)
 
     def predict(self):
         print("Predicting labels for {0}.".format(self.classifierName))
@@ -53,7 +65,12 @@ class Classifier(object):
                recall_score(self.ytest, y_pred, average="weighted"),\
                f1_score(self.ytest, y_pred, average="weighted")
 
-    def rankFeats(self, rankN=-1):
+    def rankFeats(self):
+        rankN = self.args.rank
+        if not rankN:
+            return ""
+
+        print("Ranking features...")
         # Override for regression and classifiers with readily available
         # Rankers
         from sklearn.feature_selection import mutual_info_classif

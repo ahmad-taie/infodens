@@ -74,22 +74,6 @@ class Configurator:
             self.kenlmBinPath = config["Settings"].get("kenlm", "")
             self.srilmBinPath = config["Settings"].get("srilm", "")
 
-            # TODO: Will be reused as future feature to split input file
-            # configLine = config["Settings"].get("folds", "1 0")
-            # configLine = configLine.strip().split()
-            # if configLine[0].isdigit():
-            #     folds = int(configLine[0])
-            #     if folds > 0:
-            #         self.cv_folds = folds
-            #         if len(configLine) > 1:
-            #             self.cv_Percent = float(configLine[1])
-            #     else:
-            #         print("Number of folds is not a positive integer.")
-            #         sys.exit()
-            # else:
-            #     print("Number of folds is not a positive integer.")
-            #     sys.exit()
-
         # Read the output values
         if "Output" in config:
             self.classifReport = config["Output"].get("classifier report", "")

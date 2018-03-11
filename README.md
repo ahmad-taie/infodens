@@ -94,8 +94,8 @@ threads : 4
 # parameter. The names of the classifiers will be preappended.
 persist model: testClass.skl
 
-# The classification report output
-output classifier: report1.txt
+# The classification report output file name
+classifier report: report1.txt
 
 # feature output file name followed by format(s) (libsvm, csv, and arff supported)
 output features: feats_out libsvm csv
