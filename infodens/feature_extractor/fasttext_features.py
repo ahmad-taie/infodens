@@ -14,9 +14,20 @@ from fastText import train_supervised
 
 class FastText_features(Feature_extractor):
 
+    def roundLabelsRegress(self, regressions):
+        ''' This function approximates regression values
+        to labels. Enabling the use of fastText with continuous values'''
+        labels = []
+        for regress in regressions:
+            labels.append(round(regress))
+
+        return labels
+
     def trainFastText(self, sents, labls, argsOut):
 
         outFile = "ft_runTrain.txt"
+
+        labls = self.roundLabelsRegress(labls)
 
         for i in range(0, len(sents)):
             sents[i] = "__label__{0} {1}".format(labls[i], sents[i])
