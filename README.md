@@ -37,8 +37,8 @@ The mandatory parameters for the config file are:
 
 ```
 [Input]
-input file : trainFile
-input classes : classesFile
+train file : trainFile
+train classes : classesFile
 test file : testFile
 test classes: testClassesFile
 
@@ -63,11 +63,11 @@ All the config file parameters in their respective sections are shown below with
 [Input]
 
 # Functions as above
-input file : sentences.train
+train file : sentences.train
 
-# Specifies the path for the file containing the class labels/ values.
+# Specifies the path for the file containing the train class labels/values.
 # Each line gives the label to the corresponding input sentence
-input classes:  data/testSentClasses2.txt
+train classes:  data/testSentClasses2.txt
 
 # Those two files need to be both specified for a test run.
 test file : sentences.test
@@ -104,8 +104,8 @@ output features: feats_out libsvm csv
 # As described above
 1
 2
-4:1,1
-4:2,1
+4: -ngram 1 -cutoff 2
+4: -ngram 2 -cutoff 5
 
 [Classifiers]
 
@@ -114,9 +114,10 @@ output features: feats_out libsvm csv
 # The SVR_linear regressor is also available for regression
 SVR_linear
 
-# The r after the name is the argument for feature ranking
-# Follow it with N (optional) for only the top N ranking features
-SVC_linear: r 5
+# Classifiers also take argument strings
+# A default -rank argument implements feature ranking
+# Follow it with N for only the top N ranking features and -1 for ranking all
+SVC_linear: -rank 5
 
 
 ```

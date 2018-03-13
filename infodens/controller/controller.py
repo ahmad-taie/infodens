@@ -19,7 +19,7 @@ class Controller:
         # classification parameters are fixed across Multilingual runs
         self.predict = False
         self.predictOrTestFile = ""
-        self.inputClasses = ""
+        self.trainClasses = ""
         self.testClasses = ""
         self.classifiersList = []
         self.classifierArgs = []
@@ -53,8 +53,8 @@ class Controller:
                 self.predict = True
             elif config.testSentsFile:
                 self.predictOrTestFile = config.testSentsFile
-            if config.inputClasses:
-                self.inputClasses = config.inputClasses
+            if config.trainClasses:
+                self.trainClasses = config.trainClasses
             if config.testClasses:
                 self.testClasses = config.testClasses
             if config.featOutput:
@@ -94,7 +94,7 @@ class Controller:
 
     def loadLabels(self):
         prep_serv = Preprocess_Services()
-        self.trainClassesList = prep_serv.preprocessClassID(self.inputClasses)
+        self.trainClassesList = prep_serv.preprocessClassID(self.trainClasses)
         if self.testClasses:
             self.testClassesList = prep_serv.preprocessClassID(self.testClasses)
 
@@ -113,11 +113,11 @@ class Controller:
             formatter = format.Format(self.trainFeats, self.trainClassesList,
                                       self.featDescriptors)
             # if format is not set in config, will use a default libsvm output.
-            formatter.outFormat("trainFeats_{0}".format(self.featOutput), self.featOutFormat)
+            formatter.outFormat("{0}_trainFeats".format(self.featOutput), self.featOutFormat)
 
-    def classesSentsMismatch(self, inputFile, testFile):
+    def classesSentsMismatch(self, trainFile, testFile):
         prep_serv = Preprocess_Services()
-        trainSentsCount = len(prep_serv.preprocessBySentence(inputFile))
+        trainSentsCount = len(prep_serv.preprocessBySentence(trainFile))
         if trainSentsCount != len(self.trainClassesList):
             return True
 
@@ -134,7 +134,7 @@ class Controller:
 
         for configurator in self.configurators:
             self.loadLabels()
-            if self.classesSentsMismatch(configurator.inputFile, configurator.testSentsFile):
+            if self.classesSentsMismatch(configurator.trainFile, configurator.testSentsFile):
                 print("Count of Classes and Sentences differ. Exiting.")
                 sys.exit()
 
@@ -147,8 +147,8 @@ class Controller:
                                                   kenlmBins=configurator.kenlmBinPath,
                                                   lang=configurator.language)
 
-            trainPreprocessor = preprocess.Preprocess(configurator.inputFile, configurator.corpusLM,
-                                                      configurator.inputClasses, configurator.language,
+            trainPreprocessor = preprocess.Preprocess(configurator.trainFile, configurator.corpusLM,
+                                                      configurator.trainClasses, configurator.language,
                                                       configurator.threadsCount, prep_servs)
 
             # Preprocessor for the test/predict sentences. Classes file not passsed
@@ -160,7 +160,9 @@ class Controller:
             manageFeatures = featman.Feature_manager(configurator.featureIDs,
                                                      configurator.featargs,
                                                      configurator.threadsCount,
-                                                     trainPreprocessor, testPreprocessor)
+                                                     trainPreprocessor, testPreprocessor,
+                                                     configurator.trainFeatsFile,
+                                                     configurator.testFeatsFile)
             validFeats = manageFeatures.checkFeatValidity()
             if validFeats:
                 # Continue to call features
@@ -186,20 +188,21 @@ class Controller:
 
     def outputTestFeatures(self, classifierName=""):
 
-        # Output predicted labels if Predict
+        if not self.featOutput and not self.predict:
+            print("Feature output was not specified.")
+            return 0
+
+        # Output just predicted labels if Predict
         if self.predict:
+            print("Outputting features from {0}..".format(classifierName))
             outFile = "{0}_predicted_{1}.label".format(self.predictOrTestFile, classifierName)
             formatter = format.Format(self.testFeats, self.testClassesList)
             formatter.outPredictedLabels(outFile, self.testClassesList)
-
-        if not self.featOutput and not self.predict:
-            print("Feature output was not specified.")
-        else:
-            print("Outputting features from {0}..".format(classifierName))
+        # Output also features if requested
+        if self.featOutput:
             # Output test Feats
             formatter = format.Format(self.testFeats, self.testClassesList)
-            formatter.outFormat("testFeats_{0}_{1}".format(self.featOutput, classifierName),
-                                 self.featOutFormat)
+            formatter.outFormat("{0}_testFeats".format(self.featOutput), self.featOutFormat)
 
     def classifyFeats(self):
         """Instantiate a classifier Manager then run it. """
@@ -229,6 +232,9 @@ class Controller:
                     for i in range(0, len(labels)):
                         self.testClassesList = labels[i]
                         self.outputTestFeatures(self.classifiersList[i])
+                else:
+                    self.outputTestFeatures()
+
                 # Write output if file specified
                 if self.classifReport:
                     with open(self.classifReport, 'w') as classifOut:

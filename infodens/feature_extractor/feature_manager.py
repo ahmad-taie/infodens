@@ -4,6 +4,7 @@ import sys, inspect
 from joblib import Parallel, delayed
 import itertools
 from scipy import sparse
+from sklearn.datasets import load_svmlight_file
 
 
 def runFeatureMethod(mtdCls, featureID, preprocessor, testPreprocessor,
@@ -34,14 +35,18 @@ class Feature_manager:
     And call the necessary feature extractors.
     """
 
-    def __init__(self, featureIDs, featargs, threadsCount, trainPrep, testPrep):
+    def __init__(self, featureIDs, featargs, threadsCount, trainPrep, testPrep, auxTrain="",
+                        auxTest=""):
         self.featureIDs = featureIDs
         self.featureArgs = featargs
         self.preprocessor = trainPrep
         # Preprocessor for the test sentences
         self.testPreprocessor = testPrep
+        self.auxTrainFeats = auxTrain
+        self.auxTestFeats = auxTest
         self.threads = threadsCount
         self.featDescriptors = []
+        self.featDescIndex = 0
 
         sys.path.append(os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
         import infodens.feature_extractor.feature_extractor as feat_extr
@@ -54,7 +59,7 @@ class Feature_manager:
 
         trainFeats = []
         testFeats = []
-        featIndex = 0
+        featIndex = self.featDescIndex
 
         for tuple in featAndDesc:
             trainFeats.append(tuple[0])
@@ -71,6 +76,7 @@ class Feature_manager:
             featIndex = featIndex + tuple[0].get_shape()[1]
 
         #print(self.featDescriptors)
+        self.featDescIndex = featIndex
         return trainFeats, testFeats
 
     def checkFeatValidity(self):
@@ -129,6 +135,25 @@ class Feature_manager:
 
         return idClassmethod, allFeatureIds
 
+    def getAuxFeats(self):
+        if self.auxTrainFeats:
+            # Get X only from data
+            # TODO: handle sparse features that disappear
+            auxTrain = load_svmlight_file(self.auxTrainFeats)[0]
+            auxTest = load_svmlight_file(self.auxTestFeats)[0]
+            dimOfFeats = auxTrain.get_shape()[1]
+            if dimOfFeats > 1:
+                self.featDescriptors.append("Features {0} to {1}: {2}".format(
+                    self.featDescIndex, dimOfFeats, self.auxTrainFeats))
+            else:
+                self.featDescriptors.append("Feature {0}: {1}".format(
+                    self.featDescIndex, self.auxTrainFeats))
+            self.featDescIndex += dimOfFeats
+            print("Loaded {0} feature(s) from file: {1}".format(dimOfFeats, self.auxTrainFeats))
+            return auxTrain.tolil(), auxTest.tolil()
+        else:
+            return _, _,
+
     def callExtractors(self):
         '''Extract all feature Ids and names.  '''
 
@@ -155,6 +180,12 @@ class Feature_manager:
         print("All features extracted. ")
 
         trainFeatures, testFeatures = self.separateFeatAndDescrip(featuresExtracted)
+
+        if self.auxTrainFeats:
+            auxTrain, auxTest = self.getAuxFeats()
+            # Add aux feats to list
+            trainFeatures.append(auxTrain)
+            testFeatures.append(auxTest)
 
         #Format into scikit format (Each row is a sen)
         trainFeatures = sparse.hstack(trainFeatures, "lil")

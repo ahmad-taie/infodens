@@ -20,12 +20,14 @@ class Configurator:
     def __init__(self, configFile=None):
         self.configFile = configFile
 
-        self.inputFile = ""
-        self.inputClasses = ""
+        self.trainFile = ""
+        self.trainClasses = ""
         self.testSentsFile = ""
         self.testClasses = ""
         self.predictSentsFile = ""
 
+        self.trainFeatsFile = ""
+        self.testFeatsFile = ""
         self.featureIDs = []
         self.featargs = []
         self.classifiersList = []
@@ -44,12 +46,14 @@ class Configurator:
 
         # Read the Input values
         if "Input" in config:
-            self.inputFile = config["Input"].get("input file", "")
-            self.inputClasses = config["Input"].get("input classes", "")
+            self.trainFile = config["Input"].get("train file", "")
+            self.trainClasses = config["Input"].get("train classes", "")
             self.testSentsFile = config["Input"].get("test file", "")
             self.predictSentsFile = config["Input"].get("predict file", "")
             self.testClasses = config["Input"].get("test classes", "")
-            if not self.inputFile or not self.inputClasses\
+            self.trainFeatsFile = config["Input"].get("train feats", "")
+            self.testFeatsFile = config["Input"].get("test feats", "")
+            if not self.trainFile or not self.trainClasses\
                     or not (self.testSentsFile or self.predictSentsFile):
                 print("Error: Files missing. Requires: Input file and "
                       "classes and test/predict file.")
@@ -61,9 +65,12 @@ class Configurator:
                 print("Error: Missing test file or classes.")
                 print("If predicting use \"predict file:\" argument.")
                 sys.exit()
+            if bool(self.trainFeatsFile) ^ bool(self.testFeatsFile):
+                print("Error: Both Train and test feats are required.")
+                sys.exit()
 
             self.corpusLM = config["Input"].get("training corpus", "")
-            self.language = config["Input"].get("language", "en")
+            self.language = config["Input"].get("language", "eng")
         else:
             print("Error: Input section missing.")
             sys.exit()
@@ -103,8 +110,13 @@ class Configurator:
                 else:
                     self.featureIDs.append(int(feat))
                     self.featargs.append("")
+            if len(self.featureIDs) == 0:
+                print("Error: No features requested.")
+                # TODO: Continue if Aux features given
+                sys.exit()
         else:
-            print("No features requested.")
+            print("Error: No features requested.")
+            sys.exit()
 
         if "Classifiers" in config:
             for classif in config["Classifiers"]:

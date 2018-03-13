@@ -1,11 +1,14 @@
 [Input]
 # params are parsed after ':' or '='
 
-input file : data/sent2.train
-input classes:  data/sent2_classes.train
+train file : data/sent2.train
+train classes:  data/sent2_classes.train
 test file : data/sent2.test
 test classes:  data/sent2_classes.test
 #predict file : data/sent2.test
+
+#train feats: feats_trainFeats.libsvm
+#test feats: feats_testFeats.libsvm
 
 #training corpus: data/30k.literature.orig_tran.low.en
 language : eng
@@ -40,7 +43,7 @@ SVC_linear
 #2: a,b,c,d
 #3: -pos_tags J,N,V,R
 #3: -pos_tags J,N,V,R -pos_train data/sent2.train
-#4: -ngram 1 -cutoff 2
+4: -ngram 1 -cutoff 2
 #4: -ngram 2 -cutoff 5
 #4: -ngram 3 -cutoff 10
 #5: -ngram 1 -cutoff 10
@@ -60,4 +63,4 @@ SVC_linear
 #20: -ngram 3 -lm data/testSent2.txt_langModel3.lm
 #21 : -pos_corpus data/testSent2.txt_tagged_Input.txt
 #77: -ngram 5
-801: -dim 50 -epochs 10 -wordNgrams 2
+#801: -dim 50 -epochs 10 -wordNgrams 2

@@ -10,6 +10,7 @@ import codecs
 import argparse
 import os
 from fastText import train_supervised
+from fastText import load_model
 
 
 class FastText_features(Feature_extractor):
@@ -24,6 +25,11 @@ class FastText_features(Feature_extractor):
         return labels
 
     def trainFastText(self, sents, labls, argsOut):
+
+        if argsOut.load:
+            # load given model
+            print("Loading fastText model {0} ..".format(argsOut.load))
+            return load_model(argsOut.load)
 
         outFile = "ft_runTrain.txt"
 
@@ -59,6 +65,10 @@ class FastText_features(Feature_extractor):
                             type=int, default=0)
         parser.add_argument("-dim", help="Length of embeddings vector.",
                             type=int, default=100)
+        parser.add_argument("-save", help="Name of file to save model to.",
+                            type=str, default="")
+        parser.add_argument("-load", help="Name of file to load model from.",
+                            type=str, default="")
 
         argsOut = parser.parse_args(args.split())
         return argsOut
@@ -81,12 +91,16 @@ class FastText_features(Feature_extractor):
 
         # Train on train sents only
         sents = self.preprocessor.getPlainSentences()
+
         model = self.trainFastText(sents, classes, args)
 
         testSents = self.testPreprocessor.getPlainSentences()
 
         trainFeats = self.getEmbeddings(sents, model)
         testFeats = self.getEmbeddings(testSents, model)
+
+        if args.save:
+            model.save_model(args.save)
 
         print("Learned embeddings length : {0}".format((trainFeats.get_shape()[1])))
 
