@@ -139,9 +139,18 @@ class Feature_manager:
         if self.auxTrainFeats:
             # Get X only from data
             # TODO: handle sparse features that disappear
-            auxTrain = load_svmlight_file(self.auxTrainFeats)[0]
-            auxTest = load_svmlight_file(self.auxTestFeats)[0]
+            auxTrain = load_svmlight_file(self.auxTrainFeats)[0].tolil()
+            auxTest = load_svmlight_file(self.auxTestFeats)[0].tolil()
             dimOfFeats = auxTrain.get_shape()[1]
+            dimOfTest = auxTest.get_shape()[1]
+
+            if dimOfTest < dimOfFeats:
+                sizeOfTest = auxTest.get_shape()[0]
+                print("Warning: Test feature vector smaller that train vector. Padding..")
+                padMat = sparse.lil_matrix((sizeOfTest, dimOfFeats-dimOfTest))
+                auxTest = sparse.hstack([auxTest, padMat])
+                print("Old dimension: {0}, New dimension: {1}".format(dimOfTest, auxTest.get_shape()[1]))
+
             if dimOfFeats > 1:
                 self.featDescriptors.append("Features {0} to {1}: {2}".format(
                     self.featDescIndex, dimOfFeats, self.auxTrainFeats))
@@ -150,7 +159,7 @@ class Feature_manager:
                     self.featDescIndex, self.auxTrainFeats))
             self.featDescIndex += dimOfFeats
             print("Loaded {0} feature(s) from file: {1}".format(dimOfFeats, self.auxTrainFeats))
-            return auxTrain.tolil(), auxTest.tolil()
+            return auxTrain, auxTest
         else:
             return _, _,
 
