@@ -51,8 +51,8 @@ class Configurator:
             self.testSentsFile = config["Input"].get("test file", "")
             self.predictSentsFile = config["Input"].get("predict file", "")
             self.testClasses = config["Input"].get("test classes", "")
-            self.trainFeatsFile = config["Input"].get("train feats", "")
-            self.testFeatsFile = config["Input"].get("test feats", "")
+            self.trainFeatsFile = config["Input"].get("train feats", "").split(" ")
+            self.testFeatsFile = config["Input"].get("test feats", "").split(" ")
             if not self.trainFile or not self.trainClasses\
                     or not (self.testSentsFile or self.predictSentsFile):
                 print("Error: Files missing. Requires: Input file and "
@@ -65,7 +65,7 @@ class Configurator:
                 print("Error: Missing test file or classes.")
                 print("If predicting use \"predict file:\" argument.")
                 sys.exit()
-            if bool(self.trainFeatsFile) ^ bool(self.testFeatsFile):
+            if len(self.trainFeatsFile) != len(self.testFeatsFile):
                 print("Error: Both Train and test feats are required.")
                 sys.exit()
 

@@ -135,12 +135,12 @@ class Feature_manager:
 
         return idClassmethod, allFeatureIds
 
-    def getAuxFeats(self):
-        if self.auxTrainFeats:
+    def getAuxFeats(self, auxTrainFeats, auxTestFeats):
+        if auxTrainFeats:
             # Get X only from data
-            # TODO: handle sparse features that disappear
-            auxTrain = load_svmlight_file(self.auxTrainFeats)[0].tolil()
-            auxTest = load_svmlight_file(self.auxTestFeats)[0].tolil()
+            print("Loading features from file: {0}".format(auxTrainFeats))
+            auxTrain = load_svmlight_file(auxTrainFeats)[0].tolil()
+            auxTest = load_svmlight_file(auxTestFeats)[0].tolil()
             dimOfFeats = auxTrain.get_shape()[1]
             dimOfTest = auxTest.get_shape()[1]
 
@@ -158,10 +158,10 @@ class Feature_manager:
                 self.featDescriptors.append("Feature {0}: {1}".format(
                     self.featDescIndex, self.auxTrainFeats))
             self.featDescIndex += dimOfFeats
-            print("Loaded {0} feature(s) from file: {1}".format(dimOfFeats, self.auxTrainFeats))
+            print("Loaded {0} feature(s) from file: {1}".format(dimOfFeats, auxTrainFeats))
             return auxTrain, auxTest
         else:
-            return _, _,
+            return 0, 0
 
     def callExtractors(self):
         '''Extract all feature Ids and names.  '''
@@ -190,13 +190,15 @@ class Feature_manager:
 
         trainFeatures, testFeatures = self.separateFeatAndDescrip(featuresExtracted)
 
-        if self.auxTrainFeats:
-            auxTrain, auxTest = self.getAuxFeats()
+        print(len(self.auxTrainFeats))
+        for i in range(0, len(self.auxTrainFeats)):
+            auxTrain, auxTest = self.getAuxFeats(self.auxTrainFeats[i], self.auxTestFeats[i])
             # Add aux feats to list
-            trainFeatures.append(auxTrain)
-            testFeatures.append(auxTest)
+            if auxTrain:
+                trainFeatures.append(auxTrain)
+                testFeatures.append(auxTest)
 
-        #Format into scikit format (Each row is a sen)
+        # Format into scikit format (Each row is a sen)
         trainFeatures = sparse.hstack(trainFeatures, "lil")
         testFeatures = sparse.hstack(testFeatures, "lil")
 

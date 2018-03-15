@@ -73,6 +73,11 @@ train classes:  data/testSentClasses2.txt
 test file : sentences.test
 test classes: classesFile.test 
 
+# Auxiliary feature files can be used to add to the extracted features. 
+# Specify the paths for the libsvm files seprated by space.
+train feats: feats_trainFeats.libsvm feats2_trainFeats.libsvm
+test feats: feats_testFeats.libsvm feats2_testFeats.libsvm
+
 # Here you provide the corpus to be used for building language models and word embeddings
 training corpus: data/testSent2.txt
 
@@ -134,7 +139,7 @@ python infodens.py democonfig.txt config2.txt
 
 # Predict runs
 
-The toolkit can also be used to give labels for unseen data. To do that, simply replace the test parameters (file and classes) with the "predict file" as below. The label files from different models will be preappended with the model's name.
+The toolkit can also be used to give labels for unseen data. To do that, simply replace the test parameters (file and classes) with the "predict file" as below. The label files from different models will be preappended with the model's name. The train files must also be given.
 
 Example:
 
