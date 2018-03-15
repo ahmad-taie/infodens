@@ -190,13 +190,11 @@ class Feature_manager:
 
         trainFeatures, testFeatures = self.separateFeatAndDescrip(featuresExtracted)
 
-        print(len(self.auxTrainFeats))
         for i in range(0, len(self.auxTrainFeats)):
             auxTrain, auxTest = self.getAuxFeats(self.auxTrainFeats[i], self.auxTestFeats[i])
             # Add aux feats to list
-            if auxTrain:
-                trainFeatures.append(auxTrain)
-                testFeatures.append(auxTest)
+            trainFeatures.append(auxTrain)
+            testFeatures.append(auxTest)
 
         # Format into scikit format (Each row is a sen)
         trainFeatures = sparse.hstack(trainFeatures, "lil")

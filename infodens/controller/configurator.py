@@ -42,6 +42,16 @@ class Configurator:
         self.srilmBinPath = ""
         self.kenlmBinPath = ""
 
+    def getAuxFiles(self, config):
+        auxTrain = config["Input"].get("train feats", [])
+        auxTest = config["Input"].get("test feats", [])
+
+        if auxTrain:
+            auxTrain = auxTrain.split(" ")
+            auxTest = auxTest.split(" ")
+
+        return auxTrain, auxTest
+
     def getParams(self, config):
 
         # Read the Input values
@@ -51,8 +61,7 @@ class Configurator:
             self.testSentsFile = config["Input"].get("test file", "")
             self.predictSentsFile = config["Input"].get("predict file", "")
             self.testClasses = config["Input"].get("test classes", "")
-            self.trainFeatsFile = config["Input"].get("train feats", "").split(" ")
-            self.testFeatsFile = config["Input"].get("test feats", "").split(" ")
+            self.trainFeatsFile, self.testFeatsFile = self.getAuxFiles(config)
             if not self.trainFile or not self.trainClasses\
                     or not (self.testSentsFile or self.predictSentsFile):
                 print("Error: Files missing. Requires: Input file and "
@@ -111,8 +120,9 @@ class Configurator:
                     self.featureIDs.append(int(feat))
                     self.featargs.append("")
             if len(self.featureIDs) == 0:
-                print("Error: No features requested.")
-                # TODO: Continue if Aux features given
+                print("Error: No features requested or provided.")
+                # TODO: Continue if Aux features given, handle empty IDs
+                # and no input files
                 sys.exit()
         else:
             print("Error: No features requested.")

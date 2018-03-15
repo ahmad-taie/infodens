@@ -7,8 +7,8 @@ test file : data/sent2.test
 test classes:  data/sent2_classes.test
 #predict file : data/sent2.test
 
-#train feats: feats_trainFeats.libsvm
-#test feats: feats_testFeats.libsvm
+#train feats: feats_trainFeats.libsvm feats2_trainFeats.libsvm
+#test feats: feats_testFeats.libsvm feats2_testFeats.libsvm
 
 training corpus: data/30k.literature.orig_tran.low.en
 language : eng
@@ -16,7 +16,7 @@ language : eng
 [Output]
 
 #classifier report: report1.txt
-#output features: feats libsvm
+#output features: feats2 libsvm
 #persist models: testClass.skl
 
 [Settings]
