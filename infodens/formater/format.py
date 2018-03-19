@@ -31,7 +31,7 @@ class Format:
         writer = Format_writer()
         writer.writeFormats(self.X, self.Y, fileName, formatType)
         if self.featDescriptions:
-            self.outputDescriptor("feat_descriptors_{0}.desc".format(fileName))
+            self.outputDescriptor("{0}_feat_descrips.desc".format(fileName))
         print("Feature file(s) written.")
 
 
