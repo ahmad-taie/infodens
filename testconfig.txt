@@ -22,7 +22,7 @@ language : eng
 [Settings]
 #srilm : srilm-1.7.2/bin/i686-m64
 kenlm : /home/gilani/Documents/Github/kenlm/build/bin/
-#threads : 4
+threads : 4
 
 [Classifiers]
 

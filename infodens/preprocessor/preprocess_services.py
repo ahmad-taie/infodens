@@ -4,7 +4,7 @@ Created on Tue Aug 30 15:19:12 2016
 
 @author: admin
 """
-import codecs
+import io
 import nltk
 import subprocess
 import os
@@ -25,7 +25,7 @@ class Preprocess_Services:
     def preprocessBySentence(self, inputFile):
         """Load the input file which was specified at Init of object."""
         lines = []
-        with codecs.open(inputFile, encoding='utf-8') as f:
+        with io.open(inputFile, encoding='utf-8') as f:
             lines = f.readlines()
         return lines
 
@@ -34,7 +34,7 @@ class Preprocess_Services:
 
     def preprocessClassID(self, inputClasses):
         """ Extract from each line the integer for class ID. Requires init with Classes file."""
-        with codecs.open(inputClasses, encoding='utf-8') as f:
+        with io.open(inputClasses, encoding='utf-8') as f:
             lines = f.readlines()
         ids = [float(id) for id in lines]
         return ids

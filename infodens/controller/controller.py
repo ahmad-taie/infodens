@@ -124,7 +124,7 @@ class Controller:
         if self.testClasses:
             # If no test classes, then predict mode
             testSentsCount = len(prep_serv.preprocessBySentence(testFile))
-            if testSentsCount != len(self.testClassesList):
+            if testSentsCount != len(self.testClassesList): 
                 return True
 
         return False
