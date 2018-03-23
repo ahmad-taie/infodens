@@ -10,13 +10,13 @@ test classes:  data/sent2_classes.test
 #train feats: feats_trainFeats.libsvm feats2_trainFeats.libsvm
 #test feats: feats_testFeats.libsvm feats2_testFeats.libsvm
 
-training corpus: data/30k.literature.orig_tran.low.en
+#training corpus: data/30k.literature.orig_tran.low.en
 language : eng
 
 [Output]
 
 #classifier report: report1.txt
-#output features: feats2 libsvm
+output features: feats2 libsvm
 #persist models: testClass.skl
 
 [Settings]
@@ -41,8 +41,7 @@ SVC_linear
 #1
 # This is a comment
 #2: a,b,c,d
-#3: -pos_tags J,N,V,R
-#3: -pos_tags J,N,V,R -pos_train data/sent2.train
+#3: -pos_tags JJ,JJR,JJS,NN,NNP,NNS,RB,RBR,RBS,VB,VBD,VBG,VBN,VBP,VBZ -pos_train data/sent2.train
 4: -ngram 1 -cutoff 2
 #4: -ngram 2 -cutoff 5
 #4: -ngram 3 -cutoff 1
@@ -52,7 +51,7 @@ SVC_linear
 #7: -ngram 1 -cutoff 10
 #10
 #11
-#12: -pos_tags CC,DT,WDT,IN,PDT
+#12: -pos_tags JJ,JJR,JJS,NN,NNP,NNS,RB,RBR,RBS,VB,VBD,VBG,VBN,VBP,VBZ -pos_train data/pos_sent2.train -pos_test data/pos_sent2.test
 #33:100
 #33:model1
 #34

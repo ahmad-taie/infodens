@@ -209,6 +209,7 @@ class Controller:
 
         if not (self.predictOrTestFile and self.classifiersList):
             print("Classifier parameters not specified.")
+            self.outputTestFeatures()
         else:
             print("Starting classification...")
             # Classify if the parameters needed are specified

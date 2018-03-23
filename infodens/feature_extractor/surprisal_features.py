@@ -270,11 +270,14 @@ class Surprisal_features(Feature_extractor):
         # Handle preprocessing requests and exit
         if preprocessReq:
             self.preprocessor.gettokenizeSents()
+            self.testPreprocessor.gettokenizeSents()
             return 1
 
         n, freq, nQuantas = self.ngramArgCheck(argString)
 
-        tokensCorpus = self.preprocessor.prep_servs.getFileTokens(self.preprocessor.getCorpusLMName())
+
+        #tokensCorpus = self.preprocessor.prep_servs.getFileTokens(self.preprocessor.getCorpusLMName())
+        tokensCorpus = self.preprocessor.gettokenizeSents()
 
         finNgram, numberOfFeatures = self.preprocessor.prep_servs.buildNgrams(n, freq,
                                                                               tokensCorpus, indexing=False)
