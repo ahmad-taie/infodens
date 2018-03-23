@@ -93,13 +93,13 @@ class Bag_of_ngrams_features(Feature_extractor):
             testListOfSentences = self.testPreprocessor.gettokenizeSents()
         elif ngramType is "POS":
             listOfSentences = self.preprocessor.getPOStagged(taggedInp)
-            testListOfSentences = self.testPreprocessor.getPOStagged(taggedInp)
+            testListOfSentences = self.testPreprocessor.getPOStagged(taggedTest)
         elif ngramType is "lemma":
             listOfSentences = self.preprocessor.getLemmatizedSents(taggedInp)
-            testListOfSentences = self.testPreprocessor.getLemmatizedSents(taggedInp)
+            testListOfSentences = self.testPreprocessor.getLemmatizedSents(taggedTest)
         elif ngramType is "mixed":
             listOfSentences = self.preprocessor.getMixedSents(taggedInp)
-            testListOfSentences = self.testPreprocessor.getMixedSents(taggedInp)
+            testListOfSentences = self.testPreprocessor.getMixedSents(taggedTest)
         else:
             #Assume plain
             listOfSentences = self.preprocessor.gettokenizeSents()
