@@ -10,7 +10,7 @@ test classes:  data/sent2_classes.test
 #train feats: feats_trainFeats.libsvm feats2_trainFeats.libsvm
 #test feats: feats_testFeats.libsvm feats2_testFeats.libsvm
 
-#training corpus: data/30k.literature.orig_tran.low.en
+training corpus: data/30k.literature.orig_tran.low.en
 language : eng
 
 [Output]
@@ -53,7 +53,7 @@ SVC_linear
 #11
 #12: -pos_tags JJ,JJR,JJS,NN,NNP,NNS,RB,RBR,RBS,VB,VBD,VBG,VBN,VBP,VBZ -pos_train data/pos_sent2.train -pos_test data/pos_sent2.test
 #33:100
-#33:model1
+#33:GoogleNews-vectors-negative300.bin
 #34
 #17: -ngram 3 -lm data/30k.literature.orig_tran.low.en_langModel3.lm
 #17: -ngram 3

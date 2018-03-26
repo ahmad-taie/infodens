@@ -126,7 +126,7 @@ class Preprocess_Services:
                 self.corpus = corpus
 
             def __iter__(self):
-                with codecs.open(self.corpus, encoding='utf-8') as corpusFile:
+                with io.open(self.corpus, encoding='utf-8') as corpusFile:
                     for line in corpusFile:
                         yield nltk.word_tokenize(line)
 

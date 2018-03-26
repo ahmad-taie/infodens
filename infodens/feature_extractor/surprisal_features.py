@@ -56,6 +56,8 @@ class Surprisal_features(Feature_extractor):
         model = kenlm.Model(langModel)
         probab = []
         for sent in sentences:
+            if isinstance(sent,list):
+                sent = " ".join(sent)
             log10Prob = model.score(sent, bos=True, eos=True)
             log2prob = log10Prob / math.log(2, 10)
             probab.append([log2prob, self.perplexity(sent, log2prob)])
@@ -196,12 +198,12 @@ class Surprisal_features(Feature_extractor):
         else:
             try:
                 # Use KenLM
-                probTrain = self.getKenLMScores(self.preprocessor.getPOStagged(), langModel)
-                probTest = self.getKenLMScores(self.testPreprocessor.getPOStagged(), langModel)
+                probTrain = self.getKenLMScores(self.preprocessor.getPOStagged(taggedInput), langModel)
+                probTest = self.getKenLMScores(self.testPreprocessor.getPOStagged(taggedTest), langModel)
             except ImportError:
                 # Use pynlpl
-                probTrain = self.getPynlplScores(self.preprocessor.getPOStagged(), langModel)
-                probTest = self.getPynlplScores(self.testPreprocessor.getPOStagged(), langModel)
+                probTrain = self.getPynlplScores(self.preprocessor.getPOStagged(taggedInput), langModel)
+                probTest = self.getPynlplScores(self.testPreprocessor.getPOStagged(taggedTest), langModel)
 
         return probTrain, probTest, "POS Sentence surprisal"
 
@@ -275,8 +277,6 @@ class Surprisal_features(Feature_extractor):
 
         n, freq, nQuantas = self.ngramArgCheck(argString)
 
-
-        #tokensCorpus = self.preprocessor.prep_servs.getFileTokens(self.preprocessor.getCorpusLMName())
         tokensCorpus = self.preprocessor.gettokenizeSents()
 
         finNgram, numberOfFeatures = self.preprocessor.prep_servs.buildNgrams(n, freq,

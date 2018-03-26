@@ -35,7 +35,7 @@ class SVC_linear(Classifier):
 
         print('SVM Optimizing. This will take a while')
         start_time = time.time()
-        print("using {0} threads.".format(self.threadCount))
+        print("Using {0} threads.".format(self.threadCount))
         clf = GridSearchCV(LinearSVC(verbose=0), tuned_parameters,
                            n_jobs=self.threadCount, cv=self.args.cv)
 

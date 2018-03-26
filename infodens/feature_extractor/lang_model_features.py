@@ -40,6 +40,8 @@ class Lang_model_features(Feature_extractor):
         model = kenlm.Model(langModel)
         probab = []
         for sent in sentences:
+            if isinstance(sent,list):
+                sent = " ".join(sent)
             probab.append([model.score(sent, bos=True, eos=True),
                            model.perplexity(sent)])
 
@@ -177,11 +179,11 @@ class Lang_model_features(Feature_extractor):
         else:
             try:
                 # Use KenLM
-                probTrain = self.getKenLMScores(self.preprocessor.getPOStagged(), langModel)
-                probTest = self.getKenLMScores(self.testPreprocessor.getPOStagged(), langModel)
+                probTrain = self.getKenLMScores(self.preprocessor.getPOStagged(taggedInput), langModel)
+                probTest = self.getKenLMScores(self.testPreprocessor.getPOStagged(taggedTest), langModel)
             except ImportError:
                 # Use pynlpl
-                probTrain = self.getPynlplScores(self.preprocessor.getPOStagged(), langModel)
-                probTest = self.getPynlplScores(self.testPreprocessor.getPOStagged(), langModel)
+                probTrain = self.getPynlplScores(self.preprocessor.getPOStagged(taggedInput), langModel)
+                probTest = self.getPynlplScores(self.testPreprocessor.getPOStagged(taggedTest), langModel)
 
         return probTrain, probTest, "POS Sentence preplexity"

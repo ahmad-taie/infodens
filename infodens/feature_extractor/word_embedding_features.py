@@ -57,6 +57,7 @@ class Word_embedding_features(Feature_extractor):
             if modelFile.endswith(".bin"):
                 binary = True
             model = gensim.models.KeyedVectors.load_word2vec_format(modelFile, binary=binary)
+            vecSize = len(model[next(iter(model.wv.vocab))])
 
         trainVecAverages = self.getSentEmbed(self.preprocessor.gettokenizeSents(), model, vecSize)
         testVecAverages = self.getSentEmbed(self.testPreprocessor.gettokenizeSents(), model, vecSize)
