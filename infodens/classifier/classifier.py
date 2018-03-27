@@ -34,6 +34,7 @@ class Classifier(object):
         self.threadCount = threads
         self.rankReport = ""
         self.model = None
+        print(args)
         if args:
             self.args = args.split()
         else:
@@ -41,11 +42,11 @@ class Classifier(object):
         self.args = self.argParser()
         self.train()
 
-    def argParser(self, args=""):
+    def argParser(self):
         parser = argparse.ArgumentParser(description='{0} arguments.'.format(self.classifierName))
         parser.add_argument("-rank", help="Rank N features",
                             type=int, default=0)
-        return parser.parse_args(args)
+        return parser.parse_args(self.args)
 
     def predict(self):
         print("Predicting labels for {0}.".format(self.classifierName))
@@ -70,7 +71,7 @@ class Classifier(object):
         if not rankN:
             return ""
 
-        print("Ranking features...")
+        print("Ranking  features...")
         # Override for regression and classifiers with readily available
         # Rankers
         from sklearn.feature_selection import mutual_info_classif

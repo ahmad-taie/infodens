@@ -30,12 +30,12 @@ threads : 4
 #Decision_tree
 #Ada_boost
 #Ensemble
-#SVC_linear: -r 5
-#Random_forest: -r 10
+#SVC_linear: -rank 5
+#Random_forest: -rank 10
 #SVR_linear
 #Logistic_regression
 SVC_linear
-#MLP_classifier
+#MLP_classifier: -hidden_layers 200,100
 
 [Features]
 #1

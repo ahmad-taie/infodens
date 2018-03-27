@@ -9,6 +9,7 @@ from scipy import sparse
 import codecs
 import argparse
 import os
+import time
 from fastText import train_supervised
 from fastText import load_model
 
@@ -31,7 +32,7 @@ class FastText_features(Feature_extractor):
             print("Loading fastText model {0} ..".format(argsOut.load))
             return load_model(argsOut.load)
 
-        outFile = "ft_runTrain.txt"
+        outFile = "ft_runTrain{0}.txt".format(time.time())
 
         labls = self.roundLabelsRegress(labls)
 
@@ -42,7 +43,7 @@ class FastText_features(Feature_extractor):
             file.writelines(sents)
 
         # Get model
-        model = train_supervised(input=outFile, epoch=argsOut.epochs, dim=argsOut.dim,
+        model = train_supervised(input=outFile, epoch=argsOut.epochs, dim=argsOut.dim, bucket=10000000,
                                  lr=argsOut.lr, wordNgrams=argsOut.wordNgrams, verbose=2, minCount=1)
         os.remove(outFile)
 
