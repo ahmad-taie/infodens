@@ -46,7 +46,7 @@ class SVR_linear(Classifier):
         self.model = clf.best_estimator_
 
     def rankFeats(self):
-        rankN = self.argParse.rank
+        rankN = self.args.rank
         if not rankN:
             return ""
 

@@ -26,7 +26,7 @@ threads : 4
 
 [Classifiers]
 
-#RandomForest
+#Random_forest
 #Decision_tree
 #Ada_boost
 #Ensemble

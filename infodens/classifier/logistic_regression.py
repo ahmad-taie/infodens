@@ -29,12 +29,12 @@ class Logistic_regression(Classifier):
         return accuracy_score(self.ytest, y_pred),\
                precision_score(self.ytest, y_pred, average="weighted"),\
                recall_score(self.ytest, y_pred, average="weighted"),\
-               f1_score(self.ytest, y_pred, average="weighted"),\
-               log_loss(self.ytest, t_pred)
+               f1_score(self.ytest, y_pred, average="weighted")#,\
+               #log_loss(self.ytest, t_pred)
 
     def train(self):
 
-        clf = LogisticRegression(n_jobs=self.threadCount)
+        clf = LogisticRegression()#n_jobs=self.threadCount)
         clf.fit(self.Xtrain, self.ytrain)
         self.model = clf
 

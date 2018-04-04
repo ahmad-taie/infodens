@@ -34,7 +34,7 @@ class Classifier(object):
         self.threadCount = threads
         self.rankReport = ""
         self.model = None
-        print(args)
+        print("Using {0} with arguments : {1}".format(self.classifierName, args))
         if args:
             self.args = args.split()
         else:
