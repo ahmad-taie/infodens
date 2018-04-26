@@ -7,8 +7,8 @@ test file : data/sent2.test
 test classes:  data/sent2_classes.test
 #predict file : data/sent2.test
 
-#train feats: feats_trainFeats.libsvm feats2_trainFeats.libsvm
-#test feats: feats_testFeats.libsvm feats2_testFeats.libsvm
+#train feats: feats2_trainFeats.libsvm
+#test feats: feats2_testFeats.libsvm
 
 training corpus: data/30k.literature.orig_tran.low.en
 language : eng
@@ -16,7 +16,7 @@ language : eng
 [Output]
 
 #classifier report: report1.txt
-output features: feats2 libsvm
+#output features: feats2 libsvm
 #persist models: testClass.skl
 
 [Settings]
@@ -34,8 +34,9 @@ threads : 4
 #Random_forest: -rank 10
 #SVR_linear
 #Logistic_regression
-SVC_linear
-#MLP_classifier: -hidden_layers 200,100
+#SVC_linear
+#MLP_classifier: -hidden_layers 100
+Keras_MLP: -hidden_layers 100 -epochs 4
 
 [Features]
 #1
@@ -62,4 +63,4 @@ SVC_linear
 #20: -ngram 3 -lm data/testSent2.txt_langModel3.lm
 #21 : -pos_corpus data/testSent2.txt_tagged_Input.txt
 #77: -ngram 5
-#801: -dim 50 -epochs 10 -wordNgrams 2
+#801: -dim 20 -epochs 10 -wordNgrams 2

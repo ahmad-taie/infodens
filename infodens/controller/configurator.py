@@ -56,12 +56,12 @@ class Configurator:
 
         # Read the Input values
         if "Input" in config:
+            self.trainFeatsFile, self.testFeatsFile = self.getAuxFiles(config)
             self.trainFile = config["Input"].get("train file", "")
             self.trainClasses = config["Input"].get("train classes", "")
             self.testSentsFile = config["Input"].get("test file", "")
             self.predictSentsFile = config["Input"].get("predict file", "")
             self.testClasses = config["Input"].get("test classes", "")
-            self.trainFeatsFile, self.testFeatsFile = self.getAuxFiles(config)
             if not self.trainFile or not self.trainClasses\
                     or not (self.testSentsFile or self.predictSentsFile):
                 print("Error: Files missing. Requires: Input file and "
@@ -75,8 +75,13 @@ class Configurator:
                 print("If predicting use \"predict file:\" argument.")
                 sys.exit()
             if len(self.trainFeatsFile) != len(self.testFeatsFile):
-                print("Error: Both Train and test feats are required.")
+                print("Error: Train and test feats files not matching. Check for missing files.")
                 sys.exit()
+            else:
+                print("Aux files:")
+                for i in range(0, len(self.trainFeatsFile)):
+                    print("{0}- Train: {1} | Test: {2}".format(i+1, self.trainFeatsFile[i],
+                          self.testFeatsFile[i]))
 
             self.corpusLM = config["Input"].get("training corpus", "")
             self.language = config["Input"].get("language", "eng")
@@ -121,11 +126,10 @@ class Configurator:
                     self.featargs.append("")
             if len(self.featureIDs) == 0:
                 print("Error: No features requested or provided.")
-                # TODO: Continue if Aux features given, handle empty IDs
                 # and no input files
                 sys.exit()
         else:
-            print("Error: No features requested.")
+            print("No features requested.")
             sys.exit()
 
         if "Classifiers" in config:
