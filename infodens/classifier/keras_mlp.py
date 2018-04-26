@@ -10,6 +10,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import np_utils
 from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn import preprocessing
 import numpy
 
 
@@ -44,6 +45,8 @@ class Keras_MLP(Classifier):
                             type=str, default="100")
         parser.add_argument("-epochs", help="Epochs to train for",
                             type=int, default=5)
+        parser.add_argument("-batch_size", help="Size of mini batch",
+                            type=int, default=64)
         return parser.parse_args(self.args)
 
     def train(self):
@@ -51,9 +54,10 @@ class Keras_MLP(Classifier):
         listOfHL = [int(layer) for layer in self.args.hidden_layers.split(",")]
         print("Training {0} hidden layer(s) of size(s) {1}.".format(len(listOfHL),listOfHL))
         inputDim = self.Xtrain.get_shape()[1]
-        oneHot_y = np_utils.to_categorical(self.ytrain)
-        n_classes = len(oneHot_y[0])
+
+        n_classes = len(set(self.ytrain))
+
         clf = KerasClassifier(build_fn=create_model(inputDim, listOfHL, n_classes),
-                              epochs=self.args.epochs, batch_size=10, verbose=1)
-        clf.fit(self.Xtrain, oneHot_y)
+                              epochs=self.args.epochs, batch_size=64, verbose=1)
+        clf.fit(self.Xtrain, self.ytrain)
         self.model = clf
