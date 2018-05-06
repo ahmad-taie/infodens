@@ -36,7 +36,7 @@ threads : 4
 #Logistic_regression
 #SVC_linear
 #MLP_classifier: -hidden_layers 100
-Keras_MLP: -hidden_layers 100 -epochs 4
+Keras_MLP: -hidden_layers 100,10 -epochs 4
 
 [Features]
 #1

@@ -20,8 +20,9 @@ def create_model(inputSize=None, layers=[10], n_classes=None, optimizer='adam', 
 
     def modelCreator():
         model = Sequential()
-        for layer in layers:
-            model.add(Dense(layer, input_dim=inputSize, kernel_initializer=init, activation='relu'))
+        model.add(Dense(layers[0], input_dim=inputSize, kernel_initializer=init, activation='relu'))
+        for i in range(1, len(layers)):
+            model.add(Dense(layers[i], activation='relu'))
         model.add(Dense(n_classes, kernel_initializer=init, activation='softmax'))
         # Compile model
         model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
