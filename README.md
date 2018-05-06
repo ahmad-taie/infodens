@@ -12,6 +12,7 @@ The following libraries are required:
 
 * [NumPy](http://www.numpy.org/) & [SciPy](https://www.scipy.org/)
 * [scikit-learn](http://scikit-learn.org/stable/install.html)
+* [Keras](https://keras.io/#installation) with TensorFlow backend for using GPUs.
 * [NLTK](https://www.nltk.org/install.html) with datasets.
 * [configparser](https://docs.python.org/3/library/configparser.html)
 * [joblib](https://pythonhosted.org/joblib/installing.html)
