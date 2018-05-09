@@ -7,6 +7,7 @@ Created on Sun Sep 04 14:12:49 2016
 """
 from .feature_extractor import featid, Feature_extractor
 from collections import Counter
+from sklearn.feature_extraction import FeatureHasher
 from nltk import ngrams
 from scipy import sparse
 import argparse
@@ -31,13 +32,16 @@ class Bag_of_ngrams_features(Feature_extractor):
                             type=int, default=1)
         parser.add_argument("-cutoff", help="Min. Cutoff for ngram.",
                             type=int, default=1)
+        parser.add_argument("-hash_size", help="Size of output vector from hashing.",
+                            type=int, default=None)  # Default is no hashing
 
         argsOut = parser.parse_args(args.split())
         if ngramType != "plain":
             proc_train = argsOut.proc_train
             proc_test = argsOut.proc_test
 
-        return argsOut.ngram, argsOut.cutoff, argsOut.train, proc_train, proc_test
+        return argsOut.ngram, argsOut.cutoff, argsOut.hash_size,\
+               argsOut.train, proc_train, proc_test
 
     def preprocessReqHandle(self, typeNgram, taggedInp, taggedTest):
         if typeNgram is "plain":
@@ -80,8 +84,22 @@ class Bag_of_ngrams_features(Feature_extractor):
 
         return ngramFeatures
 
+    def hashNgram(self, listOfSentences, n, numberOfFeatures):
+        hasher = FeatureHasher(n_features=numberOfFeatures)
+
+        def sentToNgram(listOfSentences):
+            for sent in listOfSentences:
+                sentDic = {}
+                sentNgrams = Counter(ngrams(sent, n))
+                for ngramElement in sentNgrams:
+                    sentDic[str(ngramElement)] = sentNgrams[ngramElement]
+                yield sentDic
+
+        return hasher.transform(sentToNgram(listOfSentences)).tolil()
+
     def ngramExtraction(self, ngramType, argString, preprocessReq):
-        n, freq, trainTokens, taggedInp, taggedTest = self.ngramArgumentCheck(argString, ngramType)
+        n, freq, hash_size,\
+        trainTokens, taggedInp, taggedTest = self.ngramArgumentCheck(argString, ngramType)
 
         # Handle preprocessing requests and exit
         if preprocessReq:
@@ -111,28 +129,35 @@ class Bag_of_ngrams_features(Feature_extractor):
             # Given file with tokens, extract tokens
             trainSentences = self.preprocessor.prep_servs.getFileTokens(trainTokens)
 
-        finNgram, numberOfFeatures = self.preprocessor.\
-                                    prep_servs.buildNgrams(n, freq, trainSentences)
+        if hash_size:
+            # Uses the hashing trick
+            print("Using the hashing trick with output vector of size: {0}".format(hash_size))
+            trainFeatures = self.hashNgram(listOfSentences, n, hash_size)
+            testFeatures = self.hashNgram(testListOfSentences, n, hash_size)
+            ngramDescrip = "Hashed {0}-grams with hash size {1}.".format(n, hash_size)
+        else:
+            print("Building {0}-grams with cutoff = {1}".format(n, freq))
+            finNgram, numberOfFeatures = self.preprocessor.\
+                                        prep_servs.buildNgrams(n, freq, trainSentences)
+            print("Ngrams built.")
 
-        print("Ngrams built.")
+            if numberOfFeatures == 0:
+                print("Cut-off too high, no ngrams passed it.")
+                sys.exit()
 
-        if numberOfFeatures == 0:
-            print("Cut-off too high, no ngrams passed it.")
-            sys.exit()
+            print("Extracting ngram feats.")
+            trainFeatures = self.extractNgram(listOfSentences, n, numberOfFeatures, finNgram)
+            testFeatures = self.extractNgram(testListOfSentences, n, numberOfFeatures, finNgram)
 
-        print("Extracting ngram feats.")
-        trainFeatures = self.extractNgram(listOfSentences, n, numberOfFeatures, finNgram)
-        testFeatures = self.extractNgram(testListOfSentences, n, numberOfFeatures, finNgram)
+            print("Finished ngram features.")
+            ngramLength = "Ngram feature vector length: " + str(numberOfFeatures)
+            print(ngramLength)
 
-        print("Finished ngram features.")
-        ngramLength = "Ngram feature vector length: " + str(numberOfFeatures)
-        print(ngramLength)
-
-        ngramDescrip = "\r\n".join(["{0}: {1}".format(gram[1], gram[0])
+            ngramDescrip = "\r\n".join(["{0}: {1}".format(gram[1], gram[0])
                                     for gram in finNgram.items()])
 
         return trainFeatures, testFeatures, "{0} ngrams with arguments: {1}:\r\n{2}".format(
-            ngramType, argString, ngramDescrip)
+                ngramType, argString, ngramDescrip)
 
     @featid(4)
     def ngramBagOfWords(self, argString, preprocessReq=0):

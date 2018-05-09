@@ -34,16 +34,16 @@ threads : 4
 #Random_forest: -rank 10
 #SVR_linear
 #Logistic_regression
-#SVC_linear
+SVC_linear
 #MLP_classifier: -hidden_layers 100
-Keras_MLP: -hidden_layers 100,10 -epochs 4
+#Keras_MLP: -hidden_layers 100,10 -epochs 4
 
 [Features]
 #1
 # This is a comment
 #2: a,b,c,d
 #3: -pos_tags JJ,JJR,JJS,NN,NNP,NNS,RB,RBR,RBS,VB,VBD,VBG,VBN,VBP,VBZ -pos_train data/sent2.train
-4: -ngram 1 -cutoff 2
+4: -ngram 1 -cutoff 2 -hash_size 3000
 #4: -ngram 2 -cutoff 5
 #4: -ngram 3 -cutoff 1
 #5: -ngram 1 -cutoff 10 -proc_train data/pos_sent2.train -proc_test data/pos_sent2.test
