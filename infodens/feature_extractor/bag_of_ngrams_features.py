@@ -84,7 +84,7 @@ class Bag_of_ngrams_features(Feature_extractor):
 
         return ngramFeatures
 
-    def hashNgram(self, listOfSentences, n, numberOfFeatures):
+    def hashNgram(self, listOfSentences, n, numberOfFeatures, finNgram=None):
         hasher = FeatureHasher(n_features=numberOfFeatures)
 
         def sentToNgram(listOfSentences):
@@ -92,7 +92,11 @@ class Bag_of_ngrams_features(Feature_extractor):
                 sentDic = {}
                 sentNgrams = Counter(ngrams(sent, n))
                 for ngramElement in sentNgrams:
-                    sentDic[str(ngramElement)] = sentNgrams[ngramElement]
+                    if finNgram:
+                        if ngramElement in finNgram:
+                            sentDic[str(ngramElement)] = sentNgrams[ngramElement]
+                    else:
+                        sentDic[str(ngramElement)] = sentNgrams[ngramElement]
                 yield sentDic
 
         return hasher.transform(sentToNgram(listOfSentences)).tolil()
@@ -130,10 +134,20 @@ class Bag_of_ngrams_features(Feature_extractor):
             trainSentences = self.preprocessor.prep_servs.getFileTokens(trainTokens)
 
         if hash_size:
+
+            if freq > 1:
+                print("Building {0}-grams with cutoff = {1}".format(n, freq))
+                finNgram, numberOfFeatures = self.preprocessor. \
+                    prep_servs.buildNgrams(n, freq, trainSentences)
+                print("Ngrams built.")
+            else:
+                print("No cut-off requested, hashing all ngrams.")
+                finNgram = None
+
             # Uses the hashing trick
             print("Using the hashing trick with output vector of size: {0}".format(hash_size))
-            trainFeatures = self.hashNgram(listOfSentences, n, hash_size)
-            testFeatures = self.hashNgram(testListOfSentences, n, hash_size)
+            trainFeatures = self.hashNgram(listOfSentences, n, hash_size, finNgram)
+            testFeatures = self.hashNgram(testListOfSentences, n, hash_size , finNgram)
             ngramDescrip = "Hashed {0}-grams with hash size {1}.".format(n, hash_size)
         else:
             print("Building {0}-grams with cutoff = {1}".format(n, freq))
