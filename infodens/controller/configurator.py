@@ -134,8 +134,15 @@ class Configurator:
 
         if "Classifiers" in config:
             for classif in config["Classifiers"]:
-                self.classifiersList.append(classif)
-                self.classifierArgs.append(config["Classifiers"].get(classif, ""))
+                args = config["Classifiers"].get(classif, "")
+                if args:
+                    args = args.split("\n")
+                    for arg in args:
+                        self.classifiersList.append(classif)
+                        self.classifierArgs.append(arg)
+                else:
+                    self.classifiersList.append(classif)
+                    self.classifierArgs.append("")
 
     def parseConfig(self):
         """Parse the config file lines.

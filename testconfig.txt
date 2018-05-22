@@ -37,6 +37,8 @@ threads : 4
 SVC_linear
 #MLP_classifier: -hidden_layers 100
 #Keras_MLP: -hidden_layers 100 -epochs 1 -dropout 0.2
+#Keras_MLP: -hidden_layers 10 -epochs 1
+
 
 [Features]
 #1
