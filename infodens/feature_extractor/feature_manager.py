@@ -165,8 +165,26 @@ class Feature_manager:
 
     def callExtractors(self):
         '''Extract all feature Ids and names.  '''
+        trainFeatures = []
+        testFeatures = []
 
-        # Gather preprocessor requests first
+        # Get aux features first
+        for i in range(0, len(self.auxTrainFeats)):
+            auxTrain, auxTest = self.getAuxFeats(self.auxTrainFeats[i], self.auxTestFeats[i])
+            # Add aux feats to list
+            trainFeatures.append(auxTrain)
+            testFeatures.append(auxTest)
+
+        # When no feature extractors requested, return
+        if len(self.featureIDs) == 0:
+            trainFeatures = sparse.hstack(trainFeatures, "lil")
+            testFeatures = sparse.hstack(testFeatures, "lil")
+            print("Features gathered.")
+            return trainFeatures, testFeatures, self.featDescriptors
+
+        # Else, continue to feature extraction
+
+        # Gather preprocessor requests
         for i in range(len(self.featureIDs)):
             runFeatureMethod(self.idClassmethod[self.featureIDs[i]],
                              self.featureIDs[i], self.preprocessor,
@@ -188,13 +206,10 @@ class Feature_manager:
 
         print("All features extracted. ")
 
-        trainFeatures, testFeatures = self.separateFeatAndDescrip(featuresExtracted)
+        trainExtractedFeats, testExtractedFeats = self.separateFeatAndDescrip(featuresExtracted)
 
-        for i in range(0, len(self.auxTrainFeats)):
-            auxTrain, auxTest = self.getAuxFeats(self.auxTrainFeats[i], self.auxTestFeats[i])
-            # Add aux feats to list
-            trainFeatures.append(auxTrain)
-            testFeatures.append(auxTest)
+        trainFeatures.extend(trainExtractedFeats)
+        testFeatures.extend(testExtractedFeats)
 
         # Format into scikit format (Each row is a sen)
         trainFeatures = sparse.hstack(trainFeatures, "lil")

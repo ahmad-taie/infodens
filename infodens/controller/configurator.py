@@ -124,13 +124,12 @@ class Configurator:
                 else:
                     self.featureIDs.append(int(feat))
                     self.featargs.append("")
-            if len(self.featureIDs) == 0:
-                print("Error: No features requested or provided.")
-                # and no input files
-                sys.exit()
-        else:
-            print("No features requested.")
+        if len(self.featureIDs) == 0 and not self.trainFeatsFile:
+            print("Error: No features requested or provided.")
+            # and no input files
             sys.exit()
+        else:
+            print("Using given features.")
 
         if "Classifiers" in config:
             for classif in config["Classifiers"]:
