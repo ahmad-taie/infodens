@@ -6,6 +6,8 @@ from infodens.formater import format
 from infodens.controller.configurator import Configurator
 import os.path
 import sys
+from scipy import sparse
+from sklearn.datasets import load_svmlight_file
 
 
 class Controller:
@@ -28,7 +30,7 @@ class Controller:
         self.featOutput = ""
         self.featOutFormat = ""
         self.classifReport = ""
-
+        self.featDescIndex = 0
         # array format of dataset and labels for classifying
         self.trainFeats = []
         self.testFeats = []
@@ -129,6 +131,34 @@ class Controller:
 
         return False
 
+    def getAuxFeats(self, auxTrainFeats, auxTestFeats):
+        if auxTrainFeats:
+            # Get X only from data
+            print("Loading features from file: {0}".format(auxTrainFeats))
+            auxTrain = load_svmlight_file(auxTrainFeats)[0].tolil()
+            auxTest = load_svmlight_file(auxTestFeats)[0].tolil()
+            dimOfFeats = auxTrain.get_shape()[1]
+            dimOfTest = auxTest.get_shape()[1]
+
+            if dimOfTest < dimOfFeats:
+                sizeOfTest = auxTest.get_shape()[0]
+                print("Warning: Test feature vector smaller that train vector. Padding..")
+                padMat = sparse.lil_matrix((sizeOfTest, dimOfFeats-dimOfTest))
+                auxTest = sparse.hstack([auxTest, padMat])
+                print("Old dimension: {0}, New dimension: {1}".format(dimOfTest, auxTest.get_shape()[1]))
+
+            if dimOfFeats > 1:
+                descriptor = "Features {0} to {1}: {2}".format(
+                    self.featDescIndex, self.featDescIndex + dimOfFeats, auxTrainFeats)
+            else:
+                descriptor = "Feature {0}: {1}".format(
+                    self.featDescIndex, auxTrainFeats)
+            self.featDescIndex += dimOfFeats
+            print("Loaded {0} feature(s) from file: {1}".format(dimOfFeats, auxTrainFeats))
+            return auxTrain, auxTest, descriptor
+        else:
+            return 0, 0
+
     def manageFeatures(self):
         """Init and call a feature manager. """
 
@@ -142,44 +172,54 @@ class Controller:
         extractedTrainFeats = []
         extractedTestFeats = []
         for configurator in self.configurators:
+            print("Using configuration file: {0}".format(configurator.configFile))
+            descriptors = []
+            if len(configurator.featureIDs) > 0:
+                prep_servs = Preprocess_Services(srilmBinaries=configurator.srilmBinPath,
+                                                      kenlmBins=configurator.kenlmBinPath,
+                                                      lang=configurator.language)
 
-            prep_servs = Preprocess_Services(srilmBinaries=configurator.srilmBinPath,
-                                                  kenlmBins=configurator.kenlmBinPath,
-                                                  lang=configurator.language)
-
-            trainPreprocessor = preprocess.Preprocess(configurator.trainFile, configurator.corpusLM,
-                                                      configurator.trainClasses, configurator.language,
-                                                      configurator.threadsCount, prep_servs)
-
-            # Preprocessor for the test/predict sentences. Classes file not passsed
-            # No peaking.
-            testPreprocessor = preprocess.Preprocess(self.predictOrTestFile, configurator.corpusLM,
-                                                          "", configurator.language,
+                trainPreprocessor = preprocess.Preprocess(configurator.trainFile, configurator.corpusLM,
+                                                          configurator.trainClasses, configurator.language,
                                                           configurator.threadsCount, prep_servs)
 
-            manageFeatures = featman.Feature_manager(configurator.featureIDs,
-                                                     configurator.featargs,
-                                                     configurator.threadsCount,
-                                                     trainPreprocessor, testPreprocessor,
-                                                     configurator.trainFeatsFile,
-                                                     configurator.testFeatsFile)
-            validFeats = manageFeatures.checkFeatValidity()
-            if validFeats:
-                # Continue to call features
-                trainFeats, testFeats, descriptors = manageFeatures.callExtractors()
-                extractedTrainFeats.append(trainFeats)
-                extractedTestFeats.append(testFeats)
-                self.featDescriptors.append(descriptors)
-            else:
-                # terminate
-                print("Requested Feature ID not available. Exiting.")
-                sys.exit()
+                # Preprocessor for the test/predict sentences. Classes file not passsed
+                # No peaking.
+                testPreprocessor = preprocess.Preprocess(self.predictOrTestFile, configurator.corpusLM,
+                                                              "", configurator.language,
+                                                              configurator.threadsCount, prep_servs)
+
+                manageFeatures = featman.Feature_manager(configurator.featureIDs,
+                                                         configurator.featargs,
+                                                         configurator.threadsCount,
+                                                         trainPreprocessor, testPreprocessor)
+                validFeats = manageFeatures.checkFeatValidity()
+                if validFeats:
+                    # Continue to call features
+                    trainFeats, testFeats, extrdescriptors, index = manageFeatures.callExtractors()
+                    extractedTrainFeats.append(trainFeats)
+                    extractedTestFeats.append(testFeats)
+                    descriptors.extend(extrdescriptors)
+                    self.featDescIndex += index
+                else:
+                    # terminate
+                    print("Requested Feature ID not available. Exiting.")
+                    sys.exit()
+
+            for i in range(0, len(configurator.trainFeatsFile)):
+                auxTrain, auxTest, auxDescriptor = self.getAuxFeats(configurator.trainFeatsFile[i],
+                                                         configurator.testFeatsFile[i])
+                # Add aux feats to list
+                extractedTrainFeats.append(auxTrain)
+                extractedTestFeats.append(auxTest)
+                descriptors.extend([auxDescriptor])
+            self.featDescriptors.append(descriptors)
 
         self.trainFeats, trainDims = featman.mergeFeats(extractedTrainFeats)
         self.testFeats, testDims = featman.mergeFeats(extractedTestFeats)
         print("Final train feature matrix dimensions: {0}".format(trainDims))
-
         print("Final test feature matrix dimensions: {0}".format(testDims))
+
         self.scaleFeatures()
 
         print("Feature Extraction Done. ")
