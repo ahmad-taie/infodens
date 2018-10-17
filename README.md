@@ -4,7 +4,7 @@
 This framework provides a quick way to generate hand-crafted and learned features from text and compare their performance. It is also designed to expedite feature engineering tasks.
 
 
-# Setup & Requirements
+## Setup & Requirements
 
 The framework is written entirely in Python (3.x supported) so it runs without compilation. However, you still need to install the required dependencies. If you are using Windows, you might find it easier to install a Python distribution like Anaconda or Canopy.
 
@@ -24,7 +24,7 @@ If you use ngram language model features, download and compile one of the follow
 * [KenLM](https://github.com/kpu/kenlm) with Python module.
 * [SRILM](http://www.speech.sri.com/projects/srilm/)
 
-# Running the toolkit
+## Running the toolkit
 
 The toolkit takes a configuration file (INI format) as an input in which all the required parameters are specified.
 
@@ -128,7 +128,7 @@ SVC_linear: -rank 5
 
 ```
 
-# Multilingual runs
+## Multilingual runs
 
 The toolkit can be run on multilingual (or parallel) corpora for tasks like Machine translation quality estimation. To do so, provide multiple configuration files as arguments, where each file represents one run of the toolkit with the input files and the required features. The classification/regression parameters are collected from all input configuration files and used on the merged feature output from all runs.
 
@@ -138,7 +138,7 @@ Example:
 python infodens.py democonfig.txt config2.txt
 ```
 
-# Predict runs
+## Predict runs
 
 The toolkit can also be used to give labels for unseen data. To do that, simply replace the test parameters (file and classes) with the "predict file" as below. The label files from different models will be preappended with the model's name. The train files must also be given.
 
@@ -150,13 +150,27 @@ Example:
 predict file : sentences.test
 ```
 
-# Developer's guide
+## Developer's guide
 
 The tool is mainly designed to ease the tasks of feature engineering. The Wiki contains a simple guide to help researchers code their own features. We also hope to encourage researchers and developers to adapt the code to their needs, for example even change the preprocessor and configurator and use the skeleton of the toolkit for other machine learning tasks.
 We welcome (and encourage) any feedback and inquiries.
 
+## Citation
 
-# List of Features:
+An overview of the framework's architecture along with a detailed evaluation is available in [this technical paper](https://arxiv.org/abs/1810.07091). If you use the framework in your work, please cite:
+
+```
+@article{2018infodens,
+  author = {Ahmad Taie and Raphael Rubino and Josef van Genabith},
+  title = "{INFODENS: An Open-source Framework for Learning Text Representations}",
+  journal = {arXiv preprint arXiv:1810.07091},
+  year      = {2018},
+  eprint = {1810.07091}
+}
+```
+
+
+## List of Features:
 
 Feature Name | ID | Description | Argument string
 --- | --- | --- | ---  
